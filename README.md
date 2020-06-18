@@ -40,7 +40,6 @@ $ cd lol-gg
 $ yarn
 ```
 3. Rename .env.exmaple to .env (env file will not upload to online - ```.gitignore```),
-If you are concerned about uploading this file to your product, update your Netlify preferences(env).
 ```
 # API KEY
 RIOT_API_KEY=YOUR RIOT API KEY
