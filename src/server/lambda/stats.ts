@@ -36,20 +36,30 @@ const typeDefs = gql`
   type Matches {
     matches: [Match]
   }
+  
+  type SummonerData {
+    summonerInfo: Summoner!
+    matchesInfo: Matches
+  }
 
   type Query {
-    summonerInfo(nickname: String!): Summoner!
-    matchesInfo(accountId: String!, params: MatchOptions): Matches!
+    summonerData(nickname: String!, params: MatchOptions): SummonerData
   }
 `;
 
 const resolvers: IResolvers = {
   Query: {
-    summonerInfo: async (_, args) => {
-      return await getSummonerInfo(args.nickname);
-    },
-    matchesInfo: async (_, args) => {
-      return await getMatchesByAccount(args.accountId, args.params);
+    summonerData: async(_, args) => {
+      const summoner = await getSummonerInfo(args.nickname);
+      try {
+        const match = await getMatchesByAccount(summoner.accountId, args.params);
+        return {
+          summonerInfo: summoner,
+          matchesInfo: match
+        };
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 };
