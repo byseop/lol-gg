@@ -26,17 +26,17 @@ export type MatchOptionTypes = {
   beginIndex?: number;
 };
 export type SummonerInfoTypes = {
-  id: string;
-  accountId: string;
-  puuid: string;
-  name: string;
-  profileIconId: number;
-  revisionDate: number;
-  summonerLevel: number;
+  id?: string;
+  accountId?: string;
+  puuid?: string;
+  name?: string;
+  profileIconId?: number;
+  revisionDate?: number;
+  summonerLevel?: number;
 }
 export type SummonerDataTypes = {
-  summonerInfo: SummonerInfoTypes,
-  matchesInfo: {
+  summonerInfo?: SummonerInfoTypes,
+  matchesInfo?: {
     matches: MatchDataTypes[];
   }
 }
