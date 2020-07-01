@@ -12,7 +12,7 @@ const statsClient = new ApolloClient({ uri: '/.netlify/functions/stats' });
 
 export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const { nickname } = match.params;
-  const [matchOption, setMatchOption] = useState<MatchOptionTypes>({
+  const [matchOption] = useState<MatchOptionTypes>({
     endIndex: 20,
     season: 13
   });

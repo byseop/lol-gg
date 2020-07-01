@@ -1,12 +1,12 @@
 import React from 'react';
 import MainRoutes from './pages/MainRoutes';
-import { Reset } from 'styled-reset';
+import GlobalStyles from './assets/globalStyles';
 
 function App() {
   return (
     <div className="App">
-      <Reset />
       <MainRoutes />
+      <GlobalStyles />
     </div>
   );
 }
