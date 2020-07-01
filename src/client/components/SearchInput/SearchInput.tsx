@@ -6,11 +6,18 @@ export default function SearchInput() {
   const [input, setInput] = useState<string>('');
   const history = useHistory();
 
-  const handleClickSearch = useCallback(
-    (input) => {
+  const goToStats = useCallback(
+    (input: string) => {
       history.push(`/stats/${input}`);
     },
     [history]
+  );
+
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      e.charCode === 13 && goToStats(input);
+    },
+    [goToStats, input]
   );
 
   return (
@@ -19,8 +26,9 @@ export default function SearchInput() {
         placeholder="소환사 명"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        onKeyPress={handleKeyPress}
       />
-      <button type="button" onClick={() => handleClickSearch(input)}>
+      <button type="button" onClick={() => goToStats(input)}>
         검색
       </button>
     </SearchInputDiv>
