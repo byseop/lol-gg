@@ -3,26 +3,26 @@ import { getVersions, getChamps } from '../api/data';
 
 const typeDefs = gql`
   type Stat {
-    hp: Int
-    hpperlevel: Int
-    mp: Int
-    mpperlevel: Int
-    movespeed: Int
-    armor: Int
-    armorperlevel: Int
-    spellblock: Int
-    spellblockperlevel: Int
-    attackrange: Int
-    hpregen: Int
-    hpregenperlevel: Int
-    mpregen: Int
-    mpregenperlevel: Int
-    crit: Int
-    critperlevel: Int
-    attackdamage: Int
-    attackdamageperlevel: Int
-    attackspeedperlevel: Int
-    attackspeed: Int
+    hp: Float
+    hpperlevel: Float
+    mp: Float
+    mpperlevel: Float
+    movespeed: Float
+    armor: Float
+    armorperlevel: Float
+    spellblock: Float
+    spellblockperlevel: Float
+    attackrange: Float
+    hpregen: Float
+    hpregenperlevel: Float
+    mpregen: Float
+    mpregenperlevel: Float
+    crit: Float
+    critperlevel: Float
+    attackdamage: Float
+    attackdamageperlevel: Float
+    attackspeedperlevel: Float
+    attackspeed: Float
   }
   type Image {
     full: String
@@ -35,7 +35,7 @@ const typeDefs = gql`
   }
   type Champion {
     version: String
-    id: String
+    id: ID
     key: String
     name: String
     title: String

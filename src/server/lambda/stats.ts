@@ -4,11 +4,11 @@ import { SummonerInfoTypes } from '../api/stats/types';
 
 const typeDefs = gql`
   type Summoner {
-    id: String!
-    accountId: String!
-    puuid: String!
+    id: ID!
+    accountId: ID!
+    puuid: ID!
     name: String!
-    profileIconId: Int!
+    profileIconId: ID!
     revisionDate: Int!
     summonerLevel: Int!
   }
@@ -24,8 +24,8 @@ const typeDefs = gql`
   }
 
   type Match {
-    platformId: String
-    gameId: String
+    platformId: ID
+    gameId: ID
     champion: Int
     queue: Int
     season: Int
