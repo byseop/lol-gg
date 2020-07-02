@@ -36,9 +36,10 @@ export default function SearchInput() {
 }
 
 const SearchInputDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 50px;
+
   input {
-    display: block;
-    margin: auto;
-    height: 50px;
   }
 `;

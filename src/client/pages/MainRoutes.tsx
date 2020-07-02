@@ -7,7 +7,7 @@ export default function MainRoutes() {
   return (
     <Switch>
       <Route path="/" exact component={HomeContainer} />
-      <Route path="/stats/:nickname" exact component={StatsContainer} />
+      <Route path="/stats/@:nickname" exact component={StatsContainer} />
       <Redirect to="/" />
     </Switch>
   );

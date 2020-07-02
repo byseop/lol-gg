@@ -51,12 +51,24 @@ const resolvers: IResolvers = {
   Query: {
     summonerData: async(_, args) => {
       const summoner = await getSummonerInfo(args.nickname);
-      try {
+      try { 
+        // getSummonerInfo try
+        if (!summoner) {
+          throw new Error('Error found at getSummonnerInfo');
+        }
         const match = await getMatchesByAccount(summoner.accountId, args.params);
-        return {
-          summonerInfo: summoner,
-          matchesInfo: match
-        };
+        try {
+          // getMatchesByAccount try
+          if (!match) {
+            throw new Error('Error found at getMatchesByAccount');
+          }
+          return {
+            summonerInfo: summoner,
+            matchesInfo: match
+          };
+        } catch (e) {
+          console.error(e);
+        }
       } catch (e) {
         console.error(e);
       }
