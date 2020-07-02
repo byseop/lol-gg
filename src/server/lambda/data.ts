@@ -72,7 +72,7 @@ const resolvers: IResolvers = {
             champs
           };
         } catch (e) {
-          throw new Error(e);
+          console.error(e);
         }
       } catch (e) {
         console.error(e);
