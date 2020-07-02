@@ -9,7 +9,7 @@ const typeDefs = gql`
     puuid: ID!
     name: String!
     profileIconId: ID!
-    revisionDate: Int!
+    revisionDate: Float!
     summonerLevel: Int!
   }
 
@@ -19,8 +19,8 @@ const typeDefs = gql`
     season: Int
     endIndex: Int
     beginIndex: Int
-    endTime: String
-    beginTime: String
+    endTime: Float
+    beginTime: Float
   }
 
   type Match {

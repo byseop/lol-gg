@@ -21,7 +21,13 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
     query($nickname: String!, $matchOption: MatchOptions) {
       summonerData(nickname: $nickname, params: $matchOption) {
         summonerInfo {
+          id
+          accountId
+          puuid
           name
+          profileIconId
+          revisionDate 
+          summonerLevel
         }
         matchesInfo {
           matches {
