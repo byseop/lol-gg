@@ -8,7 +8,7 @@ export default function SearchInput() {
 
   const goToStats = useCallback(
     (input: string) => {
-      history.push(`/stats/${input}`);
+      history.push(`/stats/@${input}`);
     },
     [history]
   );

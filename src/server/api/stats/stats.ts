@@ -10,13 +10,13 @@ export const getSummonerInfo = async (nickname: string) => {
     'X-Riot-Token': process.env.RIOT_API_KEY
   };
 
-  const response: AxiosResponse<SummonerInfoTypes> = await axios({
-    method: 'get',
-    url,
-    headers
-  });
-
   try {
+    const response: AxiosResponse<SummonerInfoTypes> = await axios({
+      method: 'get',
+      url,
+      headers
+    });
+
     if (response.status === 200) {
       return response.data;
     }
@@ -44,14 +44,14 @@ export const getMatchesByAccount = async (
     'X-Riot-Token': process.env.RIOT_API_KEY
   };
 
-  const response: AxiosResponse<MatchInfoTypes> = await axios({
-    method: 'get',
-    url,
-    headers,
-    params
-  });
-
   try {
+    const response: AxiosResponse<MatchInfoTypes> = await axios({
+      method: 'get',
+      url,
+      headers,
+      params
+    });
+
     if (response.status === 200) {
       return response.data;
     }

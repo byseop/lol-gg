@@ -1,5 +1,6 @@
 import { ApolloServer, gql, IResolvers } from 'apollo-server-lambda';
 import { getSummonerInfo, getMatchesByAccount } from '../api/stats';
+import { SummonerInfoTypes } from '../api/stats/types';
 
 const typeDefs = gql`
   type Summoner {
@@ -36,7 +37,7 @@ const typeDefs = gql`
   type Matches {
     matches: [Match]
   }
-  
+
   type SummonerData {
     summonerInfo: Summoner!
     matchesInfo: Matches
@@ -49,26 +50,17 @@ const typeDefs = gql`
 
 const resolvers: IResolvers = {
   Query: {
-    summonerData: async(_, args) => {
-      const summoner = await getSummonerInfo(args.nickname);
-      try { 
-        // getSummonerInfo try
-        if (!summoner) {
-          throw new Error('Error found at getSummonnerInfo');
-        }
-        const match = await getMatchesByAccount(summoner.accountId, args.params);
-        try {
-          // getMatchesByAccount try
-          if (!match) {
-            throw new Error('Error found at getMatchesByAccount');
-          }
-          return {
-            summonerInfo: summoner,
-            matchesInfo: match
-          };
-        } catch (e) {
-          console.error(e);
-        }
+    summonerData: async (_, args) => {
+      try {
+        const summoner = await getSummonerInfo(args.nickname);
+        const match = await getMatchesByAccount(
+          (summoner as SummonerInfoTypes).accountId,
+          args.params
+        );
+        return {
+          summonerInfo: summoner,
+          matchesInfo: match
+        };
       } catch (e) {
         console.error(e);
       }

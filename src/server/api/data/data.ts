@@ -4,12 +4,12 @@ import { Champions } from './types';
 export const getVersions = async () => {
   const url = 'https://ddragon.leagueoflegends.com/api/versions.json';
 
-  const response: AxiosResponse<[string]> = await axios({
-    method: 'get',
-    url
-  });
-
   try {
+    const response: AxiosResponse<[string]> = await axios({
+      method: 'get',
+      url
+    });
+
     if (response.status === 200) {
       return response.data[0];
     }
@@ -20,13 +20,13 @@ export const getVersions = async () => {
 
 export const getChamps = async (version: string) => {
   const url = `http://ddragon.leagueoflegends.com/cdn/${version}/data/ko_KR/champion.json`;
-  
-  const response: AxiosResponse<Champions> = await axios({
-    method: 'get',
-    url
-  })
 
   try {
+    const response: AxiosResponse<Champions> = await axios({
+      method: 'get',
+      url
+    });
+
     if (response.status === 200) {
       return Object.values(response.data.data);
     }

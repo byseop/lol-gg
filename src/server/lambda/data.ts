@@ -57,25 +57,15 @@ const typeDefs = gql`
 const resolvers: IResolvers = {
   Query: {
     gameData: async () => {
-      const version = await getVersions();
       try {
-        if (!version) {
-          throw new Error('Error found at getVersions');
-        }
-        const champs = await getChamps(version);
-        try {
-          if (!champs) {
-            throw new Error('Error found at getChamps');
-          }
-          return {
-            version,
-            champs
-          };
-        } catch (e) {
-          console.error(e);
-        }
+        const version = await getVersions();
+        const champs = await getChamps(version as string);
+        return {
+          version,
+          champs
+        };
       } catch (e) {
-        console.error(e);
+        throw new Error(e);
       }
     }
   }
