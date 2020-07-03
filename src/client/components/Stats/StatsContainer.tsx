@@ -26,7 +26,7 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
           puuid
           name
           profileIconId
-          revisionDate 
+          revisionDate
           summonerLevel
         }
         matchesInfo {
@@ -55,5 +55,8 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
   );
 
   console.log(loading, error, data);
-  return <Stats />;
+  if (data) {
+    return <Stats summonerInfo={data?.summonerData?.summonerInfo} />;
+  }
+  return null;
 }
