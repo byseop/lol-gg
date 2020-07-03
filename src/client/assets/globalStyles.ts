@@ -1,6 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
-import backgroundImage from './images/common/profile-page.jpg';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -18,7 +17,7 @@ const GlobalStyles = createGlobalStyle`
   .App {
     width: 100%;
     min-height: 100vh;
-    background: url(${backgroundImage}) fixed;
+    background: url('/assets/images/common/profile-page.jpg') fixed;
   }
 `;
 
