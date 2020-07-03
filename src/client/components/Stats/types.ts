@@ -30,13 +30,15 @@ export type SummonerInfoTypes = {
   accountId?: string;
   puuid?: string;
   name?: string;
-  profileIconId?: number;
+  profileIconId?: string;
   revisionDate?: number;
   summonerLevel?: number;
 }
 export type SummonerDataTypes = {
-  summonerInfo?: SummonerInfoTypes,
-  matchesInfo?: {
-    matches: MatchDataTypes[];
+  summonerData: {
+    summonerInfo?: SummonerInfoTypes,
+    matchesInfo?: {
+      matches: MatchDataTypes[];
+    }
   }
 }

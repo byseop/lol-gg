@@ -1,6 +1,6 @@
 import React from 'react';
 import MainRoutes from './pages/MainRoutes';
-import GlobalStyles from './assets/globalStyles';
+import GlobalStyles from './globalStyles';
 
 function App() {
   return (
