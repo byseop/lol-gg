@@ -41,5 +41,24 @@ const SearchInputDiv = styled.div`
   height: 50px;
 
   input {
+    background: rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    border: none;
+    padding: 0.5rem 1rem;
+    box-sizing: border-box;
+    color: #c5c5c5;
+    outline: none;
+
+    ::placeholder {
+      color: #c5c5c5;
+    }
+  }
+
+  button {
+    background: #1b143db3;
+    color: #c5c5c5;
+    border: none;
+    padding: 0 1.5rem;
+    outline: none;
   }
 `;
