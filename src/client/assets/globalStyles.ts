@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
+import backgroundImage from './images/common/profile-page.jpg';
 
 const GlobalStyles = createGlobalStyle`
   ${reset}
@@ -13,6 +14,12 @@ const GlobalStyles = createGlobalStyle`
   input, button, textarea {
     font-family: inherit;
   };
+
+  .App {
+    width: 100%;
+    min-height: 100vh;
+    background: url(${backgroundImage}) fixed;
+  }
 `;
 
 export default GlobalStyles;
