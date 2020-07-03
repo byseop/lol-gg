@@ -1,14 +1,15 @@
 import { ApolloServer, gql, IResolvers } from 'apollo-server-lambda';
 import { getSummonerInfo, getMatchesByAccount } from '../api/stats';
+import { SummonerInfoTypes } from '../api/stats/types';
 
 const typeDefs = gql`
   type Summoner {
-    id: String!
-    accountId: String!
-    puuid: String!
+    id: ID!
+    accountId: ID!
+    puuid: ID!
     name: String!
-    profileIconId: Int!
-    revisionDate: Int!
+    profileIconId: ID!
+    revisionDate: Float!
     summonerLevel: Int!
   }
 
@@ -18,13 +19,13 @@ const typeDefs = gql`
     season: Int
     endIndex: Int
     beginIndex: Int
-    endTime: String
-    beginTime: String
+    endTime: Float
+    beginTime: Float
   }
 
   type Match {
-    platformId: String
-    gameId: String
+    platformId: ID
+    gameId: ID
     champion: Int
     queue: Int
     season: Int
@@ -37,19 +38,32 @@ const typeDefs = gql`
     matches: [Match]
   }
 
+  type SummonerData {
+    summonerInfo: Summoner!
+    matchesInfo: Matches
+  }
+
   type Query {
-    summonerInfo(nickname: String!): Summoner!
-    matchesInfo(accountId: String!, params: MatchOptions): Matches!
+    summonerData(nickname: String!, params: MatchOptions): SummonerData
   }
 `;
 
 const resolvers: IResolvers = {
   Query: {
-    summonerInfo: async (_, args) => {
-      return await getSummonerInfo(args.nickname);
-    },
-    matchesInfo: async (_, args) => {
-      return await getMatchesByAccount(args.accountId, args.params);
+    summonerData: async (_, args) => {
+      try {
+        const summoner = await getSummonerInfo(args.nickname);
+        const match = await getMatchesByAccount(
+          (summoner as SummonerInfoTypes).accountId,
+          args.params
+        );
+        return {
+          summonerInfo: summoner,
+          matchesInfo: match
+        };
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 };

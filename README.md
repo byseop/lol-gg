@@ -19,6 +19,7 @@ Following items are core technologies use in this project:
 - CSS in JS (styled-components)  
 - Netlify  
 - Netlify Lambda Function  
+- Netlify Large Media
   
 ## Running on your machine  
 This instruction will get you copy of the project up and running on your machine for development or testing purposes.  
@@ -45,6 +46,33 @@ $ yarn
 RIOT_API_KEY=YOUR RIOT API KEY
 ```
 4. Connect the repo to your netlify, and set enviroment variable(RIOT API KEY).  
+  
+4-1. Install netlify large media.
+```
+npm install -g netlify-cli
+...
+...
+netlify plugins:install netlify-lm-plugin
+...
+...
+```
+  
+4-2. Input your netlify app key into `/.netlify/state.json`.
+```
+{
+	"siteId": "xxxx..."
+}
+```
+  
+4-3. Link to netlify
+```
+netlify link
+...
+...
+netlify lm:setup
+...
+...
+```
   
 5. Start netlify lambda development server, check your playground to ```http://localhost:9000/stats```.  
 ```
