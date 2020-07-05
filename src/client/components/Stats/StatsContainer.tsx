@@ -55,8 +55,5 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
   );
 
   console.log(loading, error, data);
-  if (data) {
-    return <Stats summonerInfo={data?.summonerData?.summonerInfo} />;
-  }
-  return null;
+  return <Stats summonerInfo={data?.summonerData?.summonerInfo} loading={loading} />;
 }
