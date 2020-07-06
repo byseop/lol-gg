@@ -14,7 +14,7 @@ export const getLeagueDatas = async (encryptedSummonerId: string) => {
   };
   try {
     const response: AxiosResponse<LeagueTypes> = await axios({
-      method: 'GET',
+      method: 'get',
       url,
       headers
     });
