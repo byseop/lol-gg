@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Stats from './Stats';
 import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
-import {
+import type {
   StatsContainerPropTypes,
   MatchOptionTypes,
   SummonerDataTypes

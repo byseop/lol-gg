@@ -2,7 +2,7 @@ import React from 'react';
 import League from './League';
 import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
-import { LeagueTypes } from 'src/server/api/league/types';
+import type { LeagueTypes } from 'src/server/api/league/types';
 
 type LeagueContainerPropTypes = {
   encryptedSummonerId: string;
@@ -36,8 +36,5 @@ export default function LeagueContainer({
     }
   );
 
-  console.log(encryptedSummonerId);
-  console.log(loading, error, data)
-  
   return <League data={data} loading={loading} error={error} />;
 }
