@@ -7,7 +7,6 @@ export type ProfilePropTypes = {
 };
 
 export default function Profile({ name, profileIconId }: ProfilePropTypes) {
-  console.log(name, profileIconId);
   return (
     <ProfileDiv>
       <div className="profile_icon">
