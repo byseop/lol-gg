@@ -117,13 +117,13 @@ const calcWinRate = (w: number, l: number) => {
 };
 
 const LeaguesWrap = styled.div`
-  background: #2e2651;
+  /* background: #2e2651; */
   width: 300px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05);
 `;
 
 const LeagueSelector = styled.div`
-  background: #2e2651;
+  background: #2e2651d1;
   display: flex;
   padding: 0.8rem 1rem;
   cursor: pointer;

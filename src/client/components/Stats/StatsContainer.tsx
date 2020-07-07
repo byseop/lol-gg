@@ -5,15 +5,16 @@ import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
 import type {
   StatsContainerPropTypes,
   MatchOptionTypes,
-  SummonerDataTypes
+  SummonerDataTypes,
 } from './types';
+
 
 const statsClient = new ApolloClient({ uri: '/.netlify/functions/stats' });
 
 export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const { nickname } = match.params;
   const [matchOption, setMatchOption] = useState<MatchOptionTypes>({
-    endIndex: 20,
+    endIndex: 10,
     season: 13
   });
 

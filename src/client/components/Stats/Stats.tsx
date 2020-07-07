@@ -7,6 +7,7 @@ import Spinner from '../Layout/Spinner';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import LeagueContainer from './League';
+import MatchesContainer from './Matches';
 
 type StatsPropTypes = {
   summonerInfo: SummonerInfoTypes | undefined;
@@ -20,7 +21,8 @@ export default function Stats({
   summonerInfo,
   loading,
   setMatchOption,
-  matchData
+  matchData,
+  matchLoading
 }: StatsPropTypes) {
   return (
     <>
@@ -43,6 +45,7 @@ export default function Stats({
                   encryptedSummonerId={summonerInfo.id as string}
                   setMatchOption={setMatchOption}
                 />
+                <MatchesContainer matchData={matchData} matchLoading={matchLoading} encryptedSummonerId={summonerInfo.id as string} />
               </div>
             </Inner>
           </StatsScreen>
@@ -56,5 +59,6 @@ const StatsScreen = styled.div`
   .stats_wrap {
     display: flex;
     margin-top: 2rem;
+    align-items: flex-start;
   }
 `;

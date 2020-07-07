@@ -1,3 +1,10 @@
+export type GameData = {
+  gameData: {
+    version: string | undefined;
+    champs: Champion[] | undefined;
+  }
+}
+
 export interface Champions {
   data: { [key: string]: Champion };
 }

@@ -13,6 +13,10 @@ module.exports = function (app) {
     createProxyMiddleware('/.netlify/functions/league', {
       target: 'http://localhost:9000/league',
       changeOrigin: true
+    }),
+    createProxyMiddleware('/.netlify/functions/match', {
+      target: 'http://localhost:9000/match',
+      changeOrigin: true
     })
   );
 };
