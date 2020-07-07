@@ -12,14 +12,14 @@ const statsClient = new ApolloClient({ uri: '/.netlify/functions/stats' });
 
 export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const { nickname } = match.params;
-  const [matchOption] = useState<MatchOptionTypes>({
+  const [matchOption, setMatchOption] = useState<MatchOptionTypes>({
     endIndex: 20,
     season: 13
   });
 
   const QUERY_SUMMONER = gql`
-    query($nickname: String!, $matchOption: MatchOptions) {
-      summonerData(nickname: $nickname, params: $matchOption) {
+    query($nickname: String!) {
+      summonerData(nickname: $nickname) {
         summonerInfo {
           id
           accountId
@@ -29,6 +29,13 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
           revisionDate
           summonerLevel
         }
+      }
+    }
+  `;
+
+  const QUERY_MATCHES = gql`
+    query($nickname: String!, $matchOption: MatchOptions) {
+      summonerData(nickname: $nickname, params: $matchOption) {
         matchesInfo {
           matches {
             platformId
@@ -45,15 +52,34 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
     }
   `;
 
-  const { loading, error, data } = useQuery<SummonerDataTypes>(
+  const { loading, /*error,*/ data } = useQuery<SummonerDataTypes>(
     QUERY_SUMMONER as DocumentNode,
     {
       client: statsClient,
-      skip: !nickname || !matchOption,
-      variables: { nickname, matchOption }
+      skip: !nickname,
+      variables: { nickname }
     }
   );
 
-  console.log(loading, error, data);
-  return <Stats summonerInfo={data?.summonerData?.summonerInfo} loading={loading} />;
+  const {
+    loading: matchLoading,
+    /*error: matchError,*/
+    data: matchData
+  } = useQuery<SummonerDataTypes>(QUERY_MATCHES as DocumentNode, {
+    client: statsClient,
+    skip: !nickname || !matchOption,
+    variables: { nickname, matchOption }
+  });
+
+  // console.log(loading, error, data);
+  // console.log(matchLoading, matchError, matchData);
+  return (
+    <Stats
+      summonerInfo={data?.summonerData?.summonerInfo}
+      loading={loading} // summoner loading
+      matchData={matchData?.summonerData?.matchesInfo?.matches}
+      matchLoading={matchLoading}
+      setMatchOption={setMatchOption}
+    />
+  );
 }

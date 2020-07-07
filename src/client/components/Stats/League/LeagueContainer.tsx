@@ -1,28 +1,32 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import League from './League';
 import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
-import type { LeagueTypes } from 'src/server/api/league/types';
+import type { LeagueTypes, QueueType } from 'src/server/api/league/types';
+import type { MatchOptionTypes } from '../types';
 
 type LeagueContainerPropTypes = {
   encryptedSummonerId: string;
+  setMatchOption: React.Dispatch<React.SetStateAction<MatchOptionTypes>>;
 };
 
 const leagueClient = new ApolloClient({ uri: '/.netlify/functions/league' });
 
 export default function LeagueContainer({
-  encryptedSummonerId
+  encryptedSummonerId,
+  setMatchOption
 }: LeagueContainerPropTypes) {
   const QUERY_LEAGUE = gql`
     query($encryptedSummonerId: String!) {
       league(encryptedSummonerId: $encryptedSummonerId) {
-        leagueId,
-        tier,
-        rank,
-        queueType,
-        summonerName,
-        wins,
+        leagueId
+        tier
+        rank
+        queueType
+        summonerName
+        wins
         losses
+        leaguePoints
       }
     }
   `;
@@ -36,5 +40,37 @@ export default function LeagueContainer({
     }
   );
 
-  return <League data={data} loading={loading} error={error} />;
+  const handleChangeLeague = useCallback(
+    (queueType: QueueType) => {
+      switch (queueType) {
+        case 'RANKED_SOLO_5x5':
+          setMatchOption((prev) => {
+            return {
+              ...prev,
+              queue: 420
+            };
+          });
+          break;
+        case 'RANKED_FLEX_SR':
+          setMatchOption((prev) => {
+            return {
+              ...prev,
+              queue: 440
+            };
+          });
+          break;
+        default:
+          setMatchOption((prev) => {
+            return {
+              ...prev,
+              queue: undefined
+            };
+          });
+          break;
+      }
+    },
+    [setMatchOption]
+  );
+
+  return <League data={data} loading={loading} error={error} handleChangeLeague={handleChangeLeague} />;
 }

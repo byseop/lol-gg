@@ -1,6 +1,6 @@
 import React from 'react';
 import ProfileContainer from './Profile';
-import { SummonerInfoTypes } from './types';
+import { SummonerInfoTypes, MatchOptionTypes, MatchDataTypes } from './types';
 import Inner from '../Layout/Inner';
 import Header from '../Layout/Header';
 import Spinner from '../Layout/Spinner';
@@ -11,9 +11,17 @@ import LeagueContainer from './League';
 type StatsPropTypes = {
   summonerInfo: SummonerInfoTypes | undefined;
   loading: boolean;
+  matchData: MatchDataTypes[] | undefined;
+  matchLoading: boolean;
+  setMatchOption: React.Dispatch<React.SetStateAction<MatchOptionTypes>>;
 };
 
-export default function Stats({ summonerInfo, loading }: StatsPropTypes) {
+export default function Stats({
+  summonerInfo,
+  loading,
+  setMatchOption,
+  matchData
+}: StatsPropTypes) {
   return (
     <>
       <Header />
@@ -31,11 +39,10 @@ export default function Stats({ summonerInfo, loading }: StatsPropTypes) {
                 profileIconId={summonerInfo.profileIconId}
               />
               <div className="stats_wrap">
-                <div className="league_selector_wrap">
-                  <LeagueContainer
-                    encryptedSummonerId={summonerInfo.id as string}
-                  />
-                </div>
+                <LeagueContainer
+                  encryptedSummonerId={summonerInfo.id as string}
+                  setMatchOption={setMatchOption}
+                />
               </div>
             </Inner>
           </StatsScreen>
@@ -48,5 +55,6 @@ export default function Stats({ summonerInfo, loading }: StatsPropTypes) {
 const StatsScreen = styled.div`
   .stats_wrap {
     display: flex;
+    margin-top: 2rem;
   }
 `;

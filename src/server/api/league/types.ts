@@ -1,7 +1,7 @@
 export type LeagueTypes = {
   league: {
     leagueId: string;
-    queueType: 'RANKED_SOLO_5x5' | 'RANKED_TEAM_5x5';
+    queueType: QueueType;
     tier: Tire;
     rank: 'I' | 'II' | 'III' | 'IV';
     summonerId: string;
@@ -15,6 +15,8 @@ export type LeagueTypes = {
     hotStreak: boolean;
   }[];
 };
+
+export type QueueType = 'RANKED_SOLO_5x5' | 'RANKED_FLEX_SR' | undefined;
 
 enum Tire {
   IRON = 'IRON',
