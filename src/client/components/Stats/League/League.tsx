@@ -120,17 +120,19 @@ const LeaguesWrap = styled.div`
   background: #2e2651;
   width: 300px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
 `;
 
 const LeagueSelector = styled.div`
+  background: #2e2651;
   display: flex;
   padding: 0.8rem 1rem;
   cursor: pointer;
   box-sizing: border-box;
+  transition: transform 0.2s ease-out;
 
   &.selected {
     box-shadow: inset 0 0 0 1px rgba(56, 198, 244);
+    transform: translateZ(10px) scale(1.05, 1.05);
   }
 
   picture {
