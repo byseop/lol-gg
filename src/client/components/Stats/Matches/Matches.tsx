@@ -22,12 +22,13 @@ function Matches({
     <MatchesWrap>
       {matchLoading && <Spinner />}
       {!matchLoading &&
-        matchData?.map((match: MatchDataTypes) => (
+        matchData?.map((match: MatchDataTypes, i) => (
           <MatchInfoContainer
             key={match.gameId}
             gameId={match.gameId}
             encryptedSummonerId={encryptedSummonerId}
             gameDataState={gameDataState}
+            index={i}
           />
         ))}
     </MatchesWrap>

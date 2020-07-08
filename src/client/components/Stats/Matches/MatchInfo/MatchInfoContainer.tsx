@@ -11,12 +11,14 @@ export type MatchInfoContainerPropTypes = {
   gameId: string | undefined;
   encryptedSummonerId: string;
   gameDataState: GameData | null;
+  index: number;
 };
 
 export default function MatchInfoContainer({
   gameId,
   encryptedSummonerId,
-  gameDataState
+  gameDataState,
+  index
 }: MatchInfoContainerPropTypes) {
   const QUERY_MATCH = gql`
     query($gameId: String!) {
@@ -89,6 +91,7 @@ export default function MatchInfoContainer({
       loading={loading}
       encryptedSummonerId={encryptedSummonerId}
       gameDataState={gameDataState}
+      index={index}
     />
   );
 }

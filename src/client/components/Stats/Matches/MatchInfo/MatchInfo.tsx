@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import type { MatchTypes } from 'src/server/api/match/types';
 import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
-import 'moment/locale/ko';
-import type { GameData } from 'src/server/api/data/types';
+import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
+import 'moment/locale/ko';
+import type { MatchTypes } from 'src/server/api/match/types';
+import type { GameData } from 'src/server/api/data/types';
 
 moment.locale('ko-kr');
 
@@ -14,13 +15,15 @@ type MatchInfoPropTypes = {
   loading: boolean;
   encryptedSummonerId: string;
   gameDataState: GameData | null;
+  index: number;
 };
 
 function MatchInfo({
   data,
   loading,
   encryptedSummonerId,
-  gameDataState
+  gameDataState,
+  index
 }: MatchInfoPropTypes) {
   const playerPID = useMemo(() => {
     if (!data) return undefined;
@@ -68,12 +71,15 @@ function MatchInfo({
           </div>
           <div className="match_info">
             <div className="champ">
-              <picture>
+              <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
                   src={`/assets/images/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
                 />
               </picture>
+              <ReactTooltip id={`matchChamp-${index}`} effect="solid">
+                <span className="tooltip-text">{player.info.champ?.name}</span>
+              </ReactTooltip>
               <div className="lane">
                 {player.info.timeline.lane !== 'NONE' && (
                   <picture>
@@ -123,10 +129,10 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
   padding: 1rem;
   background: ${(props) =>
     props.isWin
-      ? 'linear-gradient(90deg, rgba(201, 103, 143, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'
+      ? 'linear-gradient(90deg, rgba(97, 152, 164, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'
       : props.isWin === undefined
       ? '#2e2651d1'
-      : 'linear-gradient(90deg, rgba(97, 152, 164, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'};
+      : 'linear-gradient(90deg, rgba(201, 103, 143, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'};
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05);
 
   .info_head {
@@ -152,6 +158,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
 
     .champ {
       display: flex;
+      width: 72px;
       flex-flow: column;
       justify-items: center;
       align-items: center;
@@ -199,5 +206,10 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
         margin-left: 0.3rem;
       }
     }
+  }
+
+  .tooltip-text {
+    color: #fff !important;
+    font-size: 14px;
   }
 `;
