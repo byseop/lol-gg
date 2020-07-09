@@ -56,6 +56,9 @@ export default function MatchInfoContainer({
             wardsPlaced
             wardsKilled
             visionWardsBoughtInGame
+            perk0
+            perkPrimaryStyle
+            perkSubStyle
           }
           championId
         }

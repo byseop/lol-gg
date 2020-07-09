@@ -1,5 +1,5 @@
 import { ApolloServer, gql, IResolvers } from 'apollo-server-lambda';
-import { getVersions, getChamps } from '../api/data';
+import { getVersions, getChamps, getSummonerSpells, getRunes } from '../api/data';
 
 const typeDefs = gql`
   type Stat {
@@ -45,9 +45,13 @@ const typeDefs = gql`
     partype: String
     stats: Stat
   }
+  scalar Spells
+  scalar Runes
   type GameData {
     version: String
     champs: [Champion]
+    spells: Spells
+    runes: Runes
   }
   type Query {
     gameData: GameData
@@ -60,9 +64,13 @@ const resolvers: IResolvers = {
       try {
         const version = await getVersions();
         const champs = await getChamps(version as string);
+        const spells = await getSummonerSpells(version as string);
+        const runes = await getRunes(version as string);
         return {
           version,
-          champs
+          champs,
+          spells,
+          runes
         };
       } catch (e) {
         throw new Error(e);

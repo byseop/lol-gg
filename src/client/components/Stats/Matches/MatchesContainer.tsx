@@ -11,7 +11,7 @@ export type MatcheContainerPropTypes = {
 };
 
 const gameDataSelector = selector({
-  key: 'championFromGameData',
+  key: 'gameDataFromAtom',
   get: ({ get }) => {
     return get(gameDataAtom);
   }

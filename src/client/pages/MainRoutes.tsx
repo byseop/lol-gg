@@ -26,6 +26,8 @@ export default function MainRoutes() {
           name
           id
         }
+        spells
+        runes
       }
     }
   `;

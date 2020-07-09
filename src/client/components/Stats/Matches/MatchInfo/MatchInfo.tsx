@@ -4,11 +4,13 @@ import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
-import 'moment/locale/ko';
 import type { MatchTypes } from 'src/server/api/match/types';
-import type { GameData } from 'src/server/api/data/types';
-
-moment.locale('ko-kr');
+import type {
+  GameData,
+  SummonerSpell,
+  RunesReforged,
+  Rune
+} from 'src/server/api/data/types';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -41,10 +43,28 @@ function MatchInfo({
     const champ = gameDataState.gameData.champs?.find(
       (c) => c.key === temp.championId.toString()
     );
+    const spells: SummonerSpell[] = [temp.spell1Id, temp.spell2Id].reduce(
+      (acc, cur) =>
+        acc.concat(
+          gameDataState.gameData.spells?.find((s) => s.key === cur.toString())
+        ),
+      [] as any
+    );
+    const primaryRune = gameDataState.gameData.runes
+      ?.find((reforged) => reforged.id === temp?.stats.perkPrimaryStyle)
+      ?.slots[0].runes.find(
+        (primary) => primary.id === temp?.stats.perk0
+      ) as Rune;
+    const secondaryRune = gameDataState.gameData.runes?.find(
+      (reforged) => reforged.id === temp?.stats.perkSubStyle
+    ) as RunesReforged;
+    const runes: [Rune, RunesReforged] = [primaryRune, secondaryRune];
+
     return {
       info: {
-        spell: [temp.spell1Id, temp.spell2Id],
+        spells,
         champ,
+        runes,
         timeline: temp.timeline
       },
       stats: temp.stats
@@ -73,7 +93,7 @@ function MatchInfo({
             <div className="champ">
               <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
-                  src={`/assets/images/champion/${player.info.champ?.id}.png`}
+                  src={`http://ddragon.leagueoflegends.com/cdn/10.14.1/img/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
                 />
               </picture>
@@ -92,6 +112,48 @@ function MatchInfo({
                   </picture>
                 )}
                 <span>{player.info.timeline.lane}</span>
+              </div>
+            </div>
+            <div className="stats_square_slot">
+              <div className="stats_square_wrap">
+                <div className="spell">
+                  {player.info.spells?.map((spell) => (
+                    <div key={`${index}-${spell.id}`}>
+                      <picture data-tip data-for={`spell-${index}-${spell.id}`}>
+                        <img
+                          src={`http://ddragon.leagueoflegends.com/cdn/10.14.1/img/spell/${spell.id}.png`}
+                          alt={spell.id}
+                        />
+                      </picture>
+                      <ReactTooltip
+                        id={`spell-${index}-${spell.id}`}
+                        effect="solid"
+                      >
+                        <span className="tooltip-text">{spell.name}</span>
+                      </ReactTooltip>xp
+                    </div>
+                  ))}
+                </div>
+                <div className="rune">
+                  {
+                    player.info.runes.map(rune => (
+                      <div key={`${index}-${rune.id}`}>
+                        <picture data-tip data-for={`rune-${index}-${rune.id}`}>
+                          <img
+                            src={`http://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
+                            alt={rune.name}
+                          />
+                        </picture>
+                        <ReactTooltip
+                          id={`rune-${index}-${rune.id}`}
+                          effect="solid"
+                        >
+                          <span className="tooltip-text">{rune.name}</span>
+                        </ReactTooltip>xp
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
             </div>
           </div>
@@ -204,6 +266,33 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
 
       picture + span {
         margin-left: 0.3rem;
+      }
+    }
+
+    .stats_square_slot {
+      margin-left: 2rem;
+      .stats_square_wrap {
+        display: flex;
+        margin: -4px;
+        box-sizing: border-box;
+        > div {
+          display: flex;
+          flex-flow: column;
+          > div {
+            width: 34px;
+            height: 34px;
+            margin: 4px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: rgba(25, 20, 54, 0.7);
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+
+            img {
+              display: block;
+              width: 100%;
+            }
+          }
+        }
       }
     }
   }
