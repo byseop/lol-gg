@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
@@ -9,8 +9,10 @@ import type {
   GameData,
   SummonerSpell,
   RunesReforged,
-  Rune
+  Rune,
+  Champion
 } from 'src/server/api/data/types';
+import type { Recent10GamesStatsTypes } from '../../StatsContainer';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -18,6 +20,9 @@ type MatchInfoPropTypes = {
   encryptedSummonerId: string;
   gameDataState: GameData | null;
   index: number;
+  setRecent10GamesStats: React.Dispatch<
+    React.SetStateAction<Recent10GamesStatsTypes[]>
+  >;
 };
 
 function MatchInfo({
@@ -25,7 +30,8 @@ function MatchInfo({
   loading,
   encryptedSummonerId,
   gameDataState,
-  index
+  index,
+  setRecent10GamesStats
 }: MatchInfoPropTypes) {
   const playerPID = useMemo(() => {
     if (!data) return undefined;
@@ -70,8 +76,26 @@ function MatchInfo({
       stats: temp.stats
     };
   }, [data, playerPID, gameDataState]);
+  console.log(data);
+  console.log(player);
 
-  console.log(data, player);
+  useEffect(() => {
+    if (player) {
+      setRecent10GamesStats((prev) => {
+        return [
+          ...prev,
+          {
+            champ: player.info.champ as Champion,
+            kda: {
+              kills: player.stats.kills,
+              deaths: player.stats.deaths,
+              assists: player.stats.assists
+            }
+          }
+        ];
+      });
+    }
+  }, [setRecent10GamesStats, player]);
 
   return (
     <MatchInfoDiv isWin={player?.stats.win}>
@@ -88,6 +112,7 @@ function MatchInfo({
             <span className="game_duration">
               {(data.matchData.gameDuration / 60).toFixed(0)}분
             </span>
+            <span>Patch: {data.matchData.gameVersion.slice(0, 5)}</span>
           </div>
           <div className="match_info">
             <div className="champ">
@@ -101,16 +126,17 @@ function MatchInfo({
                 <span className="tooltip-text">{player.info.champ?.name}</span>
               </ReactTooltip>
               <div className="lane">
-                {player.info.timeline.lane !== 'NONE' && (
-                  <picture>
-                    <img
-                      src={`/assets/images/ranked-positions/Position_Diamond-${capitalize(
-                        player.info.timeline.lane
-                      )}.png`}
-                      alt={player.info.timeline.lane}
-                    />
-                  </picture>
-                )}
+                {player.info.timeline.lane !== 'NONE' &&
+                  data.matchData.queueId !== 450 && (
+                    <picture>
+                      <img
+                        src={`/assets/images/ranked-positions/Position_Diamond-${capitalize(
+                          player.info.timeline.lane
+                        )}.png`}
+                        alt={player.info.timeline.lane}
+                      />
+                    </picture>
+                  )}
                 <span>{player.info.timeline.lane}</span>
               </div>
             </div>
@@ -130,32 +156,84 @@ function MatchInfo({
                         effect="solid"
                       >
                         <span className="tooltip-text">{spell.name}</span>
-                      </ReactTooltip>xp
+                      </ReactTooltip>
                     </div>
                   ))}
                 </div>
                 <div className="rune">
-                  {
-                    player.info.runes.map(rune => (
-                      <div key={`${index}-${rune.id}`}>
-                        <picture data-tip data-for={`rune-${index}-${rune.id}`}>
-                          <img
-                            src={`http://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
-                            alt={rune.name}
-                          />
-                        </picture>
-                        <ReactTooltip
-                          id={`rune-${index}-${rune.id}`}
-                          effect="solid"
-                        >
-                          <span className="tooltip-text">{rune.name}</span>
-                        </ReactTooltip>xp
-                      </div>
-                    ))
-                  }
+                  {player.info.runes.map((rune) => (
+                    <div key={`${index}-${rune.id}`}>
+                      <picture data-tip data-for={`rune-${index}-${rune.id}`}>
+                        <img
+                          src={`http://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
+                          alt={rune.name}
+                        />
+                      </picture>
+                      <ReactTooltip
+                        id={`rune-${index}-${rune.id}`}
+                        effect="solid"
+                      >
+                        <span className="tooltip-text">{rune.name}</span>
+                      </ReactTooltip>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+            <div className="player_stats">
+              <p>
+                <b>{player.stats.kills}</b> / <b>{player.stats.deaths}</b> /{' '}
+                <b>{player.stats.assists}</b>
+              </p>
+              <p>
+                <b>
+                  {(
+                    (player.stats.kills + player.stats.assists) /
+                    player.stats.deaths
+                  ).toFixed(2)}{' '}
+                </b>
+                KDA
+              </p>
+              <p>
+                <b>
+                  {player.stats.totalMinionsKilled} (
+                  {(
+                    player.stats.totalMinionsKilled /
+                    Number((data.matchData.gameDuration / 60).toFixed(0))
+                  ).toFixed(1)}
+                  )
+                </b>{' '}
+                CS
+              </p>
+            </div>
+            {data.matchData.queueId !== 450 && (
+              <div className="player_stats">
+                <p data-tip data-for={`ward-${index}`}>
+                  <b>
+                    {player.stats.wardsPlaced} (
+                    {player.stats.visionWardsBoughtInGame})
+                  </b>{' '}
+                  / <b>{player.stats.wardsKilled}</b> WARD
+                  <ReactTooltip id={`ward-${index}`}>
+                    <span>설치한 와드 (제어 와드) / 제거한 와드</span>
+                  </ReactTooltip>
+                </p>
+                {player.info.timeline.csDiffPerMinDeltas && (
+                  <p>
+                    <b style={{
+                      color: Number(player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)) > 0 ? '#1DC49B' : '#E54787'
+                    }}>{player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)}</b> CS @ 10m
+                  </p>
+                )}
+                {player.info.timeline.goldPerMinDeltas && (
+                  <p>
+                    <b style={{
+                      color: Number(player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)) > 0 ? '#1DC49B' : '#E54787'
+                    }}>{player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)}</b> GOLD @ 10m
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -231,7 +309,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
         border-radius: 100%;
         overflow: hidden;
         box-sizing: border-box;
-        border: 2px solid ${(props) => (props.isWin ? '#e54787' : '#1dc49b')};
+        border: 2px solid ${(props) => (props.isWin ? '#1dc49b' : '#e54787')};
         box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 
         img {
@@ -271,6 +349,8 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
 
     .stats_square_slot {
       margin-left: 2rem;
+      display: flex;
+      align-items: center;
       .stats_square_wrap {
         display: flex;
         margin: -4px;
@@ -286,12 +366,47 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
             overflow: hidden;
             background: rgba(25, 20, 54, 0.7);
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-
-            img {
+            picture {
               display: block;
-              width: 100%;
+              height: 100%;
+              img {
+                display: block;
+                width: 100%;
+              }
             }
           }
+        }
+
+        .rune > div:nth-child(2) {
+          picture {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img {
+              width: 75%;
+            }
+          }
+        }
+      }
+    }
+
+    .player_stats {
+      display: flex;
+      justify-content: center;
+      flex-flow: column;
+      margin-left: 2rem;
+      font-size: 12px;
+      p {
+        vertical-align: middle;
+
+        b {
+          font-weight: bold;
+          font-size: 14px;
+          color: #fff;
+          vertical-align: baseline;
+        }
+        & + p {
+          margin-top: 8px;
         }
       }
     }

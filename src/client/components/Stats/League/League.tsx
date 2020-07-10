@@ -4,18 +4,23 @@ import type { ApolloError } from 'apollo-boost';
 import Spinner from '../../Layout/Spinner';
 import capitalize from 'src/client/utils/capitalize';
 import styled from 'styled-components';
+import type { Recent10GamesStatsTypes } from '../StatsContainer';
 
 export type LeaguePropTypes = {
   data: LeagueTypes | undefined;
   loading: boolean;
   error: ApolloError | undefined;
   handleChangeLeague: (queueType: QueueType) => void;
+  setRecent10GamesStats: React.Dispatch<
+    React.SetStateAction<Recent10GamesStatsTypes[]>
+  >;
 };
 
 function League({
   data,
   loading /*error*/,
-  handleChangeLeague
+  handleChangeLeague,
+  setRecent10GamesStats
 }: LeaguePropTypes) {
   const [selectedLeague, setSelectedLeague] = useState<QueueType | undefined>(
     undefined
@@ -34,7 +39,8 @@ function League({
 
   useEffect(() => {
     handleChangeLeague(selectedLeague);
-  }, [selectedLeague, handleChangeLeague]);
+    setRecent10GamesStats([]);
+  }, [selectedLeague, handleChangeLeague, setRecent10GamesStats]);
 
   // TODO: error 처리
   console.log(data);
@@ -129,10 +135,13 @@ const LeagueSelector = styled.div`
   cursor: pointer;
   box-sizing: border-box;
   transition: transform 0.2s ease-out;
+  position: relative;
+  z-index: 1;
 
   &.selected {
     box-shadow: inset 0 0 0 1px rgba(56, 198, 244);
     transform: translateZ(10px) scale(1.05, 1.05);
+    z-index: 2;
   }
 
   picture {
