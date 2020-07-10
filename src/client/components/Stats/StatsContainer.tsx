@@ -5,11 +5,20 @@ import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
 import type {
   StatsContainerPropTypes,
   MatchOptionTypes,
-  SummonerDataTypes,
+  SummonerDataTypes
 } from './types';
-
+import type { Champion } from 'src/server/api/data/types';
 
 const statsClient = new ApolloClient({ uri: '/.netlify/functions/stats' });
+
+export type Recent10GamesStatsTypes = {
+  champ: Champion;
+  kda: {
+    kills: number;
+    deaths: number;
+    assists: number;
+  };
+};
 
 export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const { nickname } = match.params;
@@ -17,6 +26,10 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
     endIndex: 10,
     season: 13
   });
+  const [recent10GamesStats, setRecent10GamesStats] = useState<
+    Recent10GamesStatsTypes[]
+  >([]);
+  console.log(recent10GamesStats);
 
   const QUERY_SUMMONER = gql`
     query($nickname: String!) {
@@ -74,6 +87,7 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
 
   // console.log(loading, error, data);
   // console.log(matchLoading, matchError, matchData);
+
   return (
     <Stats
       summonerInfo={data?.summonerData?.summonerInfo}
@@ -81,6 +95,7 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
       matchData={matchData?.summonerData?.matchesInfo?.matches}
       matchLoading={matchLoading}
       setMatchOption={setMatchOption}
+      setRecent10GamesStats={setRecent10GamesStats}
     />
   );
 }

@@ -4,17 +4,22 @@ import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
 import type { LeagueTypes, QueueType } from 'src/server/api/league/types';
 import type { MatchOptionTypes } from '../types';
+import type { Recent10GamesStatsTypes } from '../StatsContainer';
 
 type LeagueContainerPropTypes = {
   encryptedSummonerId: string;
   setMatchOption: React.Dispatch<React.SetStateAction<MatchOptionTypes>>;
+  setRecent10GamesStats: React.Dispatch<
+    React.SetStateAction<Recent10GamesStatsTypes[]>
+  >;
 };
 
 const leagueClient = new ApolloClient({ uri: '/.netlify/functions/league' });
 
 export default function LeagueContainer({
   encryptedSummonerId,
-  setMatchOption
+  setMatchOption,
+  setRecent10GamesStats
 }: LeagueContainerPropTypes) {
   const QUERY_LEAGUE = gql`
     query($encryptedSummonerId: String!) {
@@ -72,5 +77,13 @@ export default function LeagueContainer({
     [setMatchOption]
   );
 
-  return <League data={data} loading={loading} error={error} handleChangeLeague={handleChangeLeague} />;
+  return (
+    <League
+      data={data}
+      loading={loading}
+      error={error}
+      handleChangeLeague={handleChangeLeague}
+      setRecent10GamesStats={setRecent10GamesStats}
+    />
+  );
 }

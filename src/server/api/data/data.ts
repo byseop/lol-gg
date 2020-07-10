@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { Champions } from './types';
+import type { Champions, SummonerSpellTypes, RunesReforged } from './types';
 
 export const getVersions = async () => {
   const url = 'https://ddragon.leagueoflegends.com/api/versions.json';
@@ -34,3 +34,36 @@ export const getChamps = async (version: string) => {
     throw new Error(e);
   }
 };
+
+export const getSummonerSpells = async (version: string) => {
+  const url = `http://ddragon.leagueoflegends.com/cdn/${version}/data/ko_KR/summoner.json`;
+
+  try {
+    const response: AxiosResponse<SummonerSpellTypes> = await axios({
+      method: 'get',
+      url
+    });
+
+    if (response.status === 200) {
+      return Object.values(response.data.data);
+    }
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
+export const getRunes = async (version: string) => {
+  const url = `http://ddragon.leagueoflegends.com/cdn/${version}/data/ko_KR/runesReforged.json`;
+  try {
+    const response: AxiosResponse<RunesReforged> = await axios({
+      method: 'get',
+      url
+    });
+
+    if (response.status === 200) {
+      return Object.values(response.data);
+    }
+  } catch (e) {
+    throw new Error(e);
+  }
+}

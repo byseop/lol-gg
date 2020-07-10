@@ -4,6 +4,7 @@ import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
 import type { MatchTypes } from 'src/server/api/match/types';
 import type { GameData } from 'src/server/api/data/types';
+import type { Recent10GamesStatsTypes } from '../../StatsContainer';
 
 const client = new ApolloClient({ uri: '/.netlify/functions/match' });
 
@@ -11,12 +12,18 @@ export type MatchInfoContainerPropTypes = {
   gameId: string | undefined;
   encryptedSummonerId: string;
   gameDataState: GameData | null;
+  index: number;
+  setRecent10GamesStats: React.Dispatch<
+    React.SetStateAction<Recent10GamesStatsTypes[]>
+  >;
 };
 
 export default function MatchInfoContainer({
   gameId,
   encryptedSummonerId,
-  gameDataState
+  gameDataState,
+  index,
+  setRecent10GamesStats
 }: MatchInfoContainerPropTypes) {
   const QUERY_MATCH = gql`
     query($gameId: String!) {
@@ -54,6 +61,9 @@ export default function MatchInfoContainer({
             wardsPlaced
             wardsKilled
             visionWardsBoughtInGame
+            perk0
+            perkPrimaryStyle
+            perkSubStyle
           }
           championId
         }
@@ -89,6 +99,8 @@ export default function MatchInfoContainer({
       loading={loading}
       encryptedSummonerId={encryptedSummonerId}
       gameDataState={gameDataState}
+      index={index}
+      setRecent10GamesStats={setRecent10GamesStats}
     />
   );
 }

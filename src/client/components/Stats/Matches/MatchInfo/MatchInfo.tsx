@@ -1,26 +1,37 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import styled from 'styled-components';
-import type { MatchTypes } from 'src/server/api/match/types';
 import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
-import 'moment/locale/ko';
-import type { GameData } from 'src/server/api/data/types';
+import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
-
-moment.locale('ko-kr');
+import type { MatchTypes } from 'src/server/api/match/types';
+import type {
+  GameData,
+  SummonerSpell,
+  RunesReforged,
+  Rune,
+  Champion
+} from 'src/server/api/data/types';
+import type { Recent10GamesStatsTypes } from '../../StatsContainer';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
   loading: boolean;
   encryptedSummonerId: string;
   gameDataState: GameData | null;
+  index: number;
+  setRecent10GamesStats: React.Dispatch<
+    React.SetStateAction<Recent10GamesStatsTypes[]>
+  >;
 };
 
 function MatchInfo({
   data,
   loading,
   encryptedSummonerId,
-  gameDataState
+  gameDataState,
+  index,
+  setRecent10GamesStats
 }: MatchInfoPropTypes) {
   const playerPID = useMemo(() => {
     if (!data) return undefined;
@@ -38,17 +49,53 @@ function MatchInfo({
     const champ = gameDataState.gameData.champs?.find(
       (c) => c.key === temp.championId.toString()
     );
+    const spells: SummonerSpell[] = [temp.spell1Id, temp.spell2Id].reduce(
+      (acc, cur) =>
+        acc.concat(
+          gameDataState.gameData.spells?.find((s) => s.key === cur.toString())
+        ),
+      [] as any
+    );
+    const primaryRune = gameDataState.gameData.runes
+      ?.find((reforged) => reforged.id === temp?.stats.perkPrimaryStyle)
+      ?.slots[0].runes.find(
+        (primary) => primary.id === temp?.stats.perk0
+      ) as Rune;
+    const secondaryRune = gameDataState.gameData.runes?.find(
+      (reforged) => reforged.id === temp?.stats.perkSubStyle
+    ) as RunesReforged;
+    const runes: [Rune, RunesReforged] = [primaryRune, secondaryRune];
+
     return {
       info: {
-        spell: [temp.spell1Id, temp.spell2Id],
+        spells,
         champ,
+        runes,
         timeline: temp.timeline
       },
       stats: temp.stats
     };
   }, [data, playerPID, gameDataState]);
+  console.log(data);
+  console.log(player);
 
-  console.log(data, player);
+  useEffect(() => {
+    if (player) {
+      setRecent10GamesStats((prev) => {
+        return [
+          ...prev,
+          {
+            champ: player.info.champ as Champion,
+            kda: {
+              kills: player.stats.kills,
+              deaths: player.stats.deaths,
+              assists: player.stats.assists
+            }
+          }
+        ];
+      });
+    }
+  }, [setRecent10GamesStats, player]);
 
   return (
     <MatchInfoDiv isWin={player?.stats.win}>
@@ -65,29 +112,128 @@ function MatchInfo({
             <span className="game_duration">
               {(data.matchData.gameDuration / 60).toFixed(0)}분
             </span>
+            <span>Patch: {data.matchData.gameVersion.slice(0, 5)}</span>
           </div>
           <div className="match_info">
             <div className="champ">
-              <picture>
+              <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
-                  src={`/assets/images/champion/${player.info.champ?.id}.png`}
+                  src={`http://ddragon.leagueoflegends.com/cdn/10.14.1/img/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
                 />
               </picture>
+              <ReactTooltip id={`matchChamp-${index}`} effect="solid">
+                <span className="tooltip-text">{player.info.champ?.name}</span>
+              </ReactTooltip>
               <div className="lane">
-                {player.info.timeline.lane !== 'NONE' && (
-                  <picture>
-                    <img
-                      src={`/assets/images/ranked-positions/Position_Diamond-${capitalize(
-                        player.info.timeline.lane
-                      )}.png`}
-                      alt={player.info.timeline.lane}
-                    />
-                  </picture>
-                )}
+                {player.info.timeline.lane !== 'NONE' &&
+                  data.matchData.queueId !== 450 && (
+                    <picture>
+                      <img
+                        src={`/assets/images/ranked-positions/Position_Diamond-${capitalize(
+                          player.info.timeline.lane
+                        )}.png`}
+                        alt={player.info.timeline.lane}
+                      />
+                    </picture>
+                  )}
                 <span>{player.info.timeline.lane}</span>
               </div>
             </div>
+            <div className="stats_square_slot">
+              <div className="stats_square_wrap">
+                <div className="spell">
+                  {player.info.spells?.map((spell) => (
+                    <div key={`${index}-${spell.id}`}>
+                      <picture data-tip data-for={`spell-${index}-${spell.id}`}>
+                        <img
+                          src={`http://ddragon.leagueoflegends.com/cdn/10.14.1/img/spell/${spell.id}.png`}
+                          alt={spell.id}
+                        />
+                      </picture>
+                      <ReactTooltip
+                        id={`spell-${index}-${spell.id}`}
+                        effect="solid"
+                      >
+                        <span className="tooltip-text">{spell.name}</span>
+                      </ReactTooltip>
+                    </div>
+                  ))}
+                </div>
+                <div className="rune">
+                  {player.info.runes.map((rune) => (
+                    <div key={`${index}-${rune.id}`}>
+                      <picture data-tip data-for={`rune-${index}-${rune.id}`}>
+                        <img
+                          src={`http://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
+                          alt={rune.name}
+                        />
+                      </picture>
+                      <ReactTooltip
+                        id={`rune-${index}-${rune.id}`}
+                        effect="solid"
+                      >
+                        <span className="tooltip-text">{rune.name}</span>
+                      </ReactTooltip>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="player_stats">
+              <p>
+                <b>{player.stats.kills}</b> / <b>{player.stats.deaths}</b> /{' '}
+                <b>{player.stats.assists}</b>
+              </p>
+              <p>
+                <b>
+                  {(
+                    (player.stats.kills + player.stats.assists) /
+                    player.stats.deaths
+                  ).toFixed(2)}{' '}
+                </b>
+                KDA
+              </p>
+              <p>
+                <b>
+                  {player.stats.totalMinionsKilled} (
+                  {(
+                    player.stats.totalMinionsKilled /
+                    Number((data.matchData.gameDuration / 60).toFixed(0))
+                  ).toFixed(1)}
+                  )
+                </b>{' '}
+                CS
+              </p>
+            </div>
+            {data.matchData.queueId !== 450 && (
+              <div className="player_stats">
+                <p data-tip data-for={`ward-${index}`}>
+                  <b>
+                    {player.stats.wardsPlaced} (
+                    {player.stats.visionWardsBoughtInGame})
+                  </b>{' '}
+                  / <b>{player.stats.wardsKilled}</b> WARD
+                  <ReactTooltip id={`ward-${index}`}>
+                    <span>설치한 와드 (제어 와드) / 제거한 와드</span>
+                  </ReactTooltip>
+                </p>
+                {player.info.timeline.csDiffPerMinDeltas && (
+                  <p>
+                    <b style={{
+                      color: Number(player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)) > 0 ? '#1DC49B' : '#E54787'
+                    }}>{player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)}</b> CS @ 10m
+                  </p>
+                )}
+                {player.info.timeline.goldPerMinDeltas && (
+                  <p>
+                    <b style={{
+                      color: Number(player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)) > 0 ? '#1DC49B' : '#E54787'
+                    }}>{player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)}</b> GOLD @ 10m
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -123,10 +269,10 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
   padding: 1rem;
   background: ${(props) =>
     props.isWin
-      ? 'linear-gradient(90deg, rgba(201, 103, 143, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'
+      ? 'linear-gradient(90deg, rgba(97, 152, 164, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'
       : props.isWin === undefined
       ? '#2e2651d1'
-      : 'linear-gradient(90deg, rgba(97, 152, 164, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'};
+      : 'linear-gradient(90deg, rgba(201, 103, 143, 0.6) 0%, rgba(49, 41, 85, 0.7) 100%)'};
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05);
 
   .info_head {
@@ -152,6 +298,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
 
     .champ {
       display: flex;
+      width: 72px;
       flex-flow: column;
       justify-items: center;
       align-items: center;
@@ -162,7 +309,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
         border-radius: 100%;
         overflow: hidden;
         box-sizing: border-box;
-        border: 2px solid ${(props) => (props.isWin ? '#e54787' : '#1dc49b')};
+        border: 2px solid ${(props) => (props.isWin ? '#1dc49b' : '#e54787')};
         box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 
         img {
@@ -199,5 +346,74 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
         margin-left: 0.3rem;
       }
     }
+
+    .stats_square_slot {
+      margin-left: 2rem;
+      display: flex;
+      align-items: center;
+      .stats_square_wrap {
+        display: flex;
+        margin: -4px;
+        box-sizing: border-box;
+        > div {
+          display: flex;
+          flex-flow: column;
+          > div {
+            width: 34px;
+            height: 34px;
+            margin: 4px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: rgba(25, 20, 54, 0.7);
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            picture {
+              display: block;
+              height: 100%;
+              img {
+                display: block;
+                width: 100%;
+              }
+            }
+          }
+        }
+
+        .rune > div:nth-child(2) {
+          picture {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img {
+              width: 75%;
+            }
+          }
+        }
+      }
+    }
+
+    .player_stats {
+      display: flex;
+      justify-content: center;
+      flex-flow: column;
+      margin-left: 2rem;
+      font-size: 12px;
+      p {
+        vertical-align: middle;
+
+        b {
+          font-weight: bold;
+          font-size: 14px;
+          color: #fff;
+          vertical-align: baseline;
+        }
+        & + p {
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+
+  .tooltip-text {
+    color: #fff !important;
+    font-size: 14px;
   }
 `;
