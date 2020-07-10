@@ -118,7 +118,7 @@ function MatchInfo({
             <div className="champ">
               <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
-                  src={`http://ddragon.leagueoflegends.com/cdn/10.14.1/img/champion/${player.info.champ?.id}.png`}
+                  src={`https://ddragon.leagueoflegends.com/cdn/10.14.1/img/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
                 />
               </picture>
@@ -147,7 +147,7 @@ function MatchInfo({
                     <div key={`${index}-${spell.id}`}>
                       <picture data-tip data-for={`spell-${index}-${spell.id}`}>
                         <img
-                          src={`http://ddragon.leagueoflegends.com/cdn/10.14.1/img/spell/${spell.id}.png`}
+                          src={`https://ddragon.leagueoflegends.com/cdn/10.14.1/img/spell/${spell.id}.png`}
                           alt={spell.id}
                         />
                       </picture>
@@ -165,7 +165,7 @@ function MatchInfo({
                     <div key={`${index}-${rune.id}`}>
                       <picture data-tip data-for={`rune-${index}-${rune.id}`}>
                         <img
-                          src={`http://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
+                          src={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
                           alt={rune.name}
                         />
                       </picture>
