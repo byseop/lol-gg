@@ -181,11 +181,11 @@ function MatchInfo({
               </div>
             </div>
             <div className="player_stats">
-              <p>
+              <div className="text_line">
                 <b>{player.stats.kills}</b> / <b>{player.stats.deaths}</b> /{' '}
                 <b>{player.stats.assists}</b>
-              </p>
-              <p>
+              </div>
+              <div className="text_line">
                 <b>
                   {(
                     (player.stats.kills + player.stats.assists) /
@@ -193,8 +193,8 @@ function MatchInfo({
                   ).toFixed(2)}{' '}
                 </b>
                 KDA
-              </p>
-              <p>
+              </div>
+              <div className="text_line">
                 <b>
                   {player.stats.totalMinionsKilled} (
                   {(
@@ -204,11 +204,11 @@ function MatchInfo({
                   )
                 </b>{' '}
                 CS
-              </p>
+              </div>
             </div>
             {data.matchData.queueId !== 450 && (
               <div className="player_stats">
-                <p data-tip data-for={`ward-${index}`}>
+                <div className="text_line" data-tip data-for={`ward-${index}`}>
                   <b>
                     {player.stats.wardsPlaced} (
                     {player.stats.visionWardsBoughtInGame})
@@ -217,20 +217,20 @@ function MatchInfo({
                   <ReactTooltip id={`ward-${index}`}>
                     <span>설치한 와드 (제어 와드) / 제거한 와드</span>
                   </ReactTooltip>
-                </p>
+                </div>
                 {player.info.timeline.csDiffPerMinDeltas && (
-                  <p>
+                  <div className="text_line">
                     <b style={{
                       color: Number(player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)) > 0 ? '#1DC49B' : '#E54787'
                     }}>{player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)}</b> CS @ 10m
-                  </p>
+                  </div>
                 )}
                 {player.info.timeline.goldPerMinDeltas && (
-                  <p>
+                  <div className="text_line">
                     <b style={{
                       color: Number(player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)) > 0 ? '#1DC49B' : '#E54787'
                     }}>{player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)}</b> GOLD @ 10m
-                  </p>
+                  </div>
                 )}
               </div>
             )}
@@ -396,7 +396,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
       flex-flow: column;
       margin-left: 2rem;
       font-size: 12px;
-      p {
+      .text_line {
         vertical-align: middle;
 
         b {
@@ -405,7 +405,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
           color: #fff;
           vertical-align: baseline;
         }
-        & + p {
+        & + .text_line{
           margin-top: 8px;
         }
       }
