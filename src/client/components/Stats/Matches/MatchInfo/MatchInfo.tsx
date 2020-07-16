@@ -71,13 +71,15 @@ function MatchInfo({
         spells,
         champ,
         runes,
-        timeline: temp.timeline
+        timeline: temp.timeline,
+        items: []
       },
       stats: temp.stats
     };
   }, [data, playerPID, gameDataState]);
   console.log(data);
   console.log(player);
+  console.log(gameDataState?.gameData);
 
   useEffect(() => {
     if (player) {
@@ -118,7 +120,10 @@ function MatchInfo({
             <div className="champ">
               <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/10.14.1/img/champion/${player.info.champ?.id}.png`}
+                  src={`https://ddragon.leagueoflegends.com/cdn/${data.matchData.gameVersion.slice(
+                    0,
+                    5
+                  )}.1/img/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
                 />
               </picture>
@@ -147,7 +152,7 @@ function MatchInfo({
                     <div key={`${index}-${spell.id}`}>
                       <picture data-tip data-for={`spell-${index}-${spell.id}`}>
                         <img
-                          src={`https://ddragon.leagueoflegends.com/cdn/10.14.1/img/spell/${spell.id}.png`}
+                          src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
                           alt={spell.id}
                         />
                       </picture>
@@ -220,20 +225,98 @@ function MatchInfo({
                 </div>
                 {player.info.timeline.csDiffPerMinDeltas && (
                   <div className="text_line">
-                    <b style={{
-                      color: Number(player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)) > 0 ? '#1DC49B' : '#E54787'
-                    }}>{player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)}</b> CS @ 10m
+                    <b
+                      style={{
+                        color:
+                          Number(
+                            player.info.timeline.csDiffPerMinDeltas[
+                              '0-10'
+                            ].toFixed(1)
+                          ) > 0
+                            ? '#1DC49B'
+                            : '#E54787'
+                      }}
+                    >
+                      {player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(
+                        1
+                      )}
+                    </b>{' '}
+                    CS @ 10m
                   </div>
                 )}
                 {player.info.timeline.goldPerMinDeltas && (
                   <div className="text_line">
-                    <b style={{
-                      color: Number(player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)) > 0 ? '#1DC49B' : '#E54787'
-                    }}>{player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)}</b> GOLD @ 10m
+                    <b
+                      style={{
+                        color:
+                          Number(
+                            player.info.timeline.goldPerMinDeltas[
+                              '0-10'
+                            ].toFixed(0)
+                          ) > 0
+                            ? '#1DC49B'
+                            : '#E54787'
+                      }}
+                    >
+                      {player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)}
+                    </b>{' '}
+                    GOLD @ 10m
                   </div>
                 )}
               </div>
             )}
+            <div className="stats_square_slot">
+              <div className="stats_square_wrap">
+                <div className="items">
+                  {player.info.spells?.map((spell) => (
+                    <div key={`${index}-${spell.id}`}>
+                      <picture data-tip data-for={`spell-${index}-${spell.id}`}>
+                        <img
+                          src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
+                          alt={spell.id}
+                        />
+                      </picture>
+                      <ReactTooltip
+                        id={`spell-${index}-${spell.id}`}
+                        effect="solid"
+                      >
+                        <span className="tooltip-text">{spell.name}</span>
+                      </ReactTooltip>
+                    </div>
+                  ))}
+                  <div>
+                    <picture>
+                      {player.stats.item0}
+                    </picture>
+                  </div>
+                  <div>
+                    <picture>
+                      {player.stats.item1}
+                    </picture>
+                  </div>
+                  <div>
+                    <picture>
+                      {player.stats.item2}
+                    </picture>
+                  </div>
+                  <div>
+                    <picture>
+                      {player.stats.item3}
+                    </picture>
+                  </div>
+                  <div>
+                    <picture>
+                      {player.stats.item4}
+                    </picture>
+                  </div>
+                  <div>
+                    <picture>
+                      {player.stats.item5}
+                    </picture>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -405,7 +488,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
           color: #fff;
           vertical-align: baseline;
         }
-        & + .text_line{
+        & + .text_line {
           margin-top: 8px;
         }
       }

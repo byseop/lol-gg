@@ -4,6 +4,7 @@ export type GameData = {
     champs: Champion[] | undefined;
     spells: SummonerSpell[] | undefined;
     runes: RunesReforged[] | undefined;
+    items: ItemsData[] | undefined;
   }
 }
 
@@ -19,15 +20,15 @@ export interface Champion {
   title: string;
   blurb: string;
   info: Info;
-  image: Image;
+  image: ChampionImage;
   tags: Tag[];
   partype: string;
   stats: { [key: string]: number };
 }
 
-export interface Image {
+export interface ChampionImage {
   full: string;
-  sprite: Sprite;
+  sprite: ChampionSprite;
   group: Group;
   x: number;
   y: number;
@@ -39,7 +40,7 @@ export enum Group {
   Champion = 'champion'
 }
 
-export enum Sprite {
+export enum ChampionSprite {
   Champion0PNG = 'champion0.png',
   Champion1PNG = 'champion1.png',
   Champion2PNG = 'champion2.png',
@@ -146,3 +147,102 @@ export interface Rune {
   longDesc:  string;
 }
 
+export interface Items {
+  type:    string;
+  version: string;
+  basic:   Basic;
+  data:    { [key: string]: ItemsData };
+  groups:  ItemGroup[];
+  tree:    Tree[];
+}
+
+export interface Basic {
+  name:             string;
+  rune:             Rune;
+  gold:             Gold;
+  group:            string;
+  description:      string;
+  colloq:           string;
+  plaintext:        string;
+  consumed:         boolean;
+  stacks:           number;
+  depth:            number;
+  consumeOnFull:    boolean;
+  from:             any[];
+  into:             any[];
+  specialRecipe:    number;
+  inStore:          boolean;
+  hideFromAll:      boolean;
+  requiredChampion: string;
+  requiredAlly:     string;
+  stats:            { [key: string]: number };
+  tags:             any[];
+  maps:             { [key: string]: boolean };
+}
+
+export interface Gold {
+  base:        number;
+  total:       number;
+  sell:        number;
+  purchasable: boolean;
+}
+
+export interface Rune {
+  isrune: boolean;
+  tier:   number;
+  type:   string;
+}
+
+export interface ItemsData {
+  name:              string;
+  description:       string;
+  colloq:            string;
+  plaintext:         string;
+  into?:             string[];
+  image:             ItemImage;
+  gold:              Gold;
+  tags:              string[];
+  maps:              { [key: string]: boolean };
+  stats:             { [key: string]: number };
+  inStore?:          boolean;
+  from?:             string[];
+  effect?:           { [key: string]: string };
+  depth?:            number;
+  stacks?:           number;
+  consumed?:         boolean;
+  hideFromAll?:      boolean;
+  consumeOnFull?:    boolean;
+  specialRecipe?:    number;
+  requiredChampion?: string;
+  requiredAlly?:     RequiredAlly;
+}
+
+export interface ItemImage {
+  full:   string;
+  sprite: ItemSprite;
+  group:  string;
+  x:      number;
+  y:      number;
+  w:      number;
+  h:      number;
+}
+
+export enum ItemSprite {
+  Item0PNG = "item0.png",
+  Item1PNG = "item1.png",
+  Item2PNG = "item2.png",
+}
+
+export enum RequiredAlly {
+  Ornn = "Ornn",
+}
+
+export interface ItemGroup {
+  id:              string;
+  MaxGroupOwnable: string;
+}
+
+export interface Tree {
+  header: string;
+  tags:   string[];
+}

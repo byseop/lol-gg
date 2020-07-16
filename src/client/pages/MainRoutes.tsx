@@ -28,6 +28,7 @@ export default function MainRoutes() {
         }
         spells
         runes
+        items
       }
     }
   `;
