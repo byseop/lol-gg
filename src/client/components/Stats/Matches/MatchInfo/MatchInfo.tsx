@@ -13,6 +13,8 @@ import type {
   Champion
 } from 'src/server/api/data/types';
 import type { Recent10GamesStatsTypes } from '../../StatsContainer';
+import type { ItemsData } from 'src/server/api/data/types';
+import SlotContainer from './Slot';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -268,52 +270,29 @@ function MatchInfo({
             <div className="stats_square_slot">
               <div className="stats_square_wrap">
                 <div className="items">
-                  {player.info.spells?.map((spell) => (
-                    <div key={`${index}-${spell.id}`}>
-                      <picture data-tip data-for={`spell-${index}-${spell.id}`}>
-                        <img
-                          src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
-                          alt={spell.id}
-                        />
-                      </picture>
-                      <ReactTooltip
-                        id={`spell-${index}-${spell.id}`}
-                        effect="solid"
-                      >
-                        <span className="tooltip-text">{spell.name}</span>
-                      </ReactTooltip>
-                    </div>
+                  {[
+                    player.stats.item0,
+                    player.stats.item1,
+                    player.stats.item2,
+                    player.stats.item3,
+                    player.stats.item4,
+                    player.stats.item5,
+                    player.stats.item6
+                  ].map((item, index) => (
+                    <SlotContainer
+                      key={`${index}-${item}`}
+                      id={item}
+                      index={index}
+                      gameVersion={gameDataState?.gameData.version as string}
+                      data={
+                        gameDataState?.gameData.items &&
+                        gameDataState?.gameData.items[
+                          item.toString() as keyof ItemsData[]
+                        ]
+                      }
+                      type={'item'}
+                    />
                   ))}
-                  <div>
-                    <picture>
-                      {player.stats.item0}
-                    </picture>
-                  </div>
-                  <div>
-                    <picture>
-                      {player.stats.item1}
-                    </picture>
-                  </div>
-                  <div>
-                    <picture>
-                      {player.stats.item2}
-                    </picture>
-                  </div>
-                  <div>
-                    <picture>
-                      {player.stats.item3}
-                    </picture>
-                  </div>
-                  <div>
-                    <picture>
-                      {player.stats.item4}
-                    </picture>
-                  </div>
-                  <div>
-                    <picture>
-                      {player.stats.item5}
-                    </picture>
-                  </div>
                 </div>
               </div>
             </div>
@@ -382,7 +361,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
     .champ {
       display: flex;
       width: 72px;
-      flex-flow: column;
+      flex-flow: column wrap;
       justify-items: center;
       align-items: center;
       > picture {
@@ -436,11 +415,12 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
       align-items: center;
       .stats_square_wrap {
         display: flex;
+        flex-wrap: wrap;
         margin: -4px;
         box-sizing: border-box;
         > div {
           display: flex;
-          flex-flow: column;
+          flex-flow: column wrap;
           > div {
             width: 34px;
             height: 34px;
@@ -470,13 +450,19 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
             }
           }
         }
+
+        .items {
+          height: 84px;
+          justify-content: center;
+          align-items: center;
+        }
       }
     }
 
     .player_stats {
       display: flex;
       justify-content: center;
-      flex-flow: column;
+      flex-flow: column wrap;
       margin-left: 2rem;
       font-size: 12px;
       .text_line {
