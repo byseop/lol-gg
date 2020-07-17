@@ -4,7 +4,11 @@ import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
-import type { MatchTypes } from 'src/server/api/match/types';
+import type {
+  MatchTypes,
+  Participant,
+  ParticipantIdentity
+} from 'src/server/api/match/types';
 import type {
   GameData,
   SummonerSpell,
@@ -13,6 +17,9 @@ import type {
   Champion
 } from 'src/server/api/data/types';
 import type { Recent10GamesStatsTypes } from '../../StatsContainer';
+import type { ItemsData } from 'src/server/api/data/types';
+import SlotContainer from './Slot';
+import { Link } from 'react-router-dom';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -71,13 +78,46 @@ function MatchInfo({
         spells,
         champ,
         runes,
-        timeline: temp.timeline
+        timeline: temp.timeline,
+        items: []
       },
       stats: temp.stats
     };
   }, [data, playerPID, gameDataState]);
+
+  const participants = useMemo(() => {
+    let temp: ((Participant & ParticipantIdentity) | null)[] = [];
+    for (let i = 0; i < 10; i++) {
+      if (data && data.matchData.participantIdentities) {
+        temp.push({
+          ...data.matchData.participantIdentities[i],
+          ...data.matchData.participants[i]
+        });
+      }
+    }
+    return temp.reduce(
+      (acc, cur) => {
+        if (cur?.teamId === 100) {
+          return {
+            ...acc,
+            team100: acc.team100.concat(cur)
+          };
+        }
+        return {
+          ...acc,
+          team200: acc.team200.concat(cur)
+        };
+      },
+      { team100: [], team200: [] } as {
+        team100: ((Participant & ParticipantIdentity) | null)[];
+        team200: ((Participant & ParticipantIdentity) | null)[];
+      }
+    );
+  }, [data]);
   console.log(data);
   console.log(player);
+  console.log(participants);
+  console.log(gameDataState?.gameData);
 
   useEffect(() => {
     if (player) {
@@ -99,7 +139,7 @@ function MatchInfo({
 
   return (
     <MatchInfoDiv isWin={player?.stats.win}>
-      {loading && <Spinner />}
+      {loading && <Spinner minHeight={163} />}
       {!loading && data && player && (
         <div className="match_info_wrap">
           <div className="info_head">
@@ -118,7 +158,7 @@ function MatchInfo({
             <div className="champ">
               <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/10.14.1/img/champion/${player.info.champ?.id}.png`}
+                  src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
                 />
               </picture>
@@ -147,7 +187,7 @@ function MatchInfo({
                     <div key={`${index}-${spell.id}`}>
                       <picture data-tip data-for={`spell-${index}-${spell.id}`}>
                         <img
-                          src={`https://ddragon.leagueoflegends.com/cdn/10.14.1/img/spell/${spell.id}.png`}
+                          src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
                           alt={spell.id}
                         />
                       </picture>
@@ -181,11 +221,11 @@ function MatchInfo({
               </div>
             </div>
             <div className="player_stats">
-              <p>
+              <div className="text_line">
                 <b>{player.stats.kills}</b> / <b>{player.stats.deaths}</b> /{' '}
                 <b>{player.stats.assists}</b>
-              </p>
-              <p>
+              </div>
+              <div className="text_line">
                 <b>
                   {(
                     (player.stats.kills + player.stats.assists) /
@@ -193,8 +233,8 @@ function MatchInfo({
                   ).toFixed(2)}{' '}
                 </b>
                 KDA
-              </p>
-              <p>
+              </div>
+              <div className="text_line">
                 <b>
                   {player.stats.totalMinionsKilled} (
                   {(
@@ -204,11 +244,11 @@ function MatchInfo({
                   )
                 </b>{' '}
                 CS
-              </p>
+              </div>
             </div>
             {data.matchData.queueId !== 450 && (
               <div className="player_stats">
-                <p data-tip data-for={`ward-${index}`}>
+                <div className="text_line" data-tip data-for={`ward-${index}`}>
                   <b>
                     {player.stats.wardsPlaced} (
                     {player.stats.visionWardsBoughtInGame})
@@ -217,23 +257,144 @@ function MatchInfo({
                   <ReactTooltip id={`ward-${index}`}>
                     <span>설치한 와드 (제어 와드) / 제거한 와드</span>
                   </ReactTooltip>
-                </p>
+                </div>
                 {player.info.timeline.csDiffPerMinDeltas && (
-                  <p>
-                    <b style={{
-                      color: Number(player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)) > 0 ? '#1DC49B' : '#E54787'
-                    }}>{player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(1)}</b> CS @ 10m
-                  </p>
+                  <div className="text_line">
+                    <b
+                      style={{
+                        color:
+                          Number(
+                            player.info.timeline.csDiffPerMinDeltas[
+                              '0-10'
+                            ].toFixed(1)
+                          ) > 0
+                            ? '#1DC49B'
+                            : '#E54787'
+                      }}
+                    >
+                      {player.info.timeline.csDiffPerMinDeltas['0-10'].toFixed(
+                        1
+                      )}
+                    </b>{' '}
+                    CS @ 10m
+                  </div>
                 )}
                 {player.info.timeline.goldPerMinDeltas && (
-                  <p>
-                    <b style={{
-                      color: Number(player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)) > 0 ? '#1DC49B' : '#E54787'
-                    }}>{player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)}</b> GOLD @ 10m
-                  </p>
+                  <div className="text_line">
+                    <b
+                      style={{
+                        color:
+                          Number(
+                            player.info.timeline.goldPerMinDeltas[
+                              '0-10'
+                            ].toFixed(0)
+                          ) > 0
+                            ? '#1DC49B'
+                            : '#E54787'
+                      }}
+                    >
+                      {player.info.timeline.goldPerMinDeltas['0-10'].toFixed(0)}
+                    </b>{' '}
+                    GOLD @ 10m
+                  </div>
                 )}
               </div>
             )}
+            <div className="stats_square_slot">
+              <div className="stats_square_wrap">
+                <div className="items">
+                  {[
+                    player.stats.item0,
+                    player.stats.item1,
+                    player.stats.item2,
+                    player.stats.item3,
+                    player.stats.item4,
+                    player.stats.item5,
+                    player.stats.item6
+                  ].map((item, index) => (
+                    <SlotContainer
+                      key={`${index}-${item}`}
+                      id={item}
+                      index={index}
+                      gameVersion={gameDataState?.gameData.version as string}
+                      data={
+                        gameDataState?.gameData.items &&
+                        gameDataState?.gameData.items[
+                          item.toString() as keyof ItemsData[]
+                        ]
+                      }
+                      type={'item'}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="participants">
+              <div className="ptcp_left">
+                {participants.team100.map((pData) => (
+                  <p
+                    style={
+                      pData?.player.summonerId === encryptedSummonerId
+                        ? {
+                            fontWeight: 'bold',
+                            color: '#fff'
+                          }
+                        : undefined
+                    }
+                  >
+                    <Link to={`/stats/@${pData?.player.summonerName}`}>
+                      <span>{pData?.player.summonerName}</span>
+                      <span>
+                        <picture>
+                          <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/${
+                              gameDataState?.gameData.version
+                            }/img/champion/${
+                              gameDataState?.gameData.champs?.find(
+                                (c) => c.key === pData?.championId.toString()
+                              )?.id
+                            }.png`}
+                            alt={pData?.player.summonerName as string}
+                          />
+                        </picture>
+                      </span>
+                    </Link>
+                  </p>
+                ))}
+              </div>
+              <div className="ptcp_right">
+                {participants.team200.map((pData) => (
+                  <p
+                    style={
+                      pData?.player.summonerId === encryptedSummonerId
+                        ? {
+                            fontWeight: 'bold',
+                            color: '#fff'
+                          }
+                        : undefined
+                    }
+                  >
+                    <Link to={`/stats/@${pData?.player.summonerName}`}>
+                      <span>
+                        <picture>
+                          <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/${
+                              gameDataState?.gameData.version
+                            }/img/champion/${
+                              gameDataState?.gameData.champs?.find(
+                                (c) => c.key === pData?.championId.toString()
+                              )?.id
+                            }.png`}
+                            alt={pData?.player.summonerName as string}
+                          />
+                        </picture>
+                      </span>
+                      <span>{pData?.player.summonerName}</span>
+                    </Link>
+                  </p>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -299,7 +460,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
     .champ {
       display: flex;
       width: 72px;
-      flex-flow: column;
+      flex-flow: column wrap;
       justify-items: center;
       align-items: center;
       > picture {
@@ -348,16 +509,17 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
     }
 
     .stats_square_slot {
-      margin-left: 2rem;
+      margin-left: 1.5rem;
       display: flex;
       align-items: center;
       .stats_square_wrap {
         display: flex;
+        flex-wrap: wrap;
         margin: -4px;
         box-sizing: border-box;
         > div {
           display: flex;
-          flex-flow: column;
+          flex-flow: column wrap;
           > div {
             width: 34px;
             height: 34px;
@@ -387,16 +549,87 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
             }
           }
         }
+
+        .items {
+          width: 166px;
+          height: 84px;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+
+    .participants {
+      margin-left: calc(1.5rem - 10px);
+      margin-right: -10px;
+      font-size: 12px;
+      display: flex;
+
+      > div {
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: space-between;
+        margin: 0 10px;
+
+        &.ptcp_left {
+          text-align: right;
+        }
+        p {
+          & + p {
+            margin-top: -6px;
+          }
+          span + span {
+            margin-left: 5px;
+          }
+          a {
+            color: inherit;
+            text-decoration: none;
+            span {
+              display: inline-block;
+              vertical-align: middle;
+              max-width: 80px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+          }
+        }
+
+        picture {
+          display: inline-block;
+          width: 24px;
+          height: 24px;
+          border-radius: 100%;
+          overflow: hidden;
+          position: relative;
+
+          &:after {
+            position: absolute;
+            left: 0;
+            top: 0;
+            content: '';
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            border: 2px solid #a17f3e;
+            box-sizing: border-box;
+          }
+
+          img {
+            display: block;
+            width: 100%;
+          }
+        }
       }
     }
 
     .player_stats {
       display: flex;
       justify-content: center;
-      flex-flow: column;
-      margin-left: 2rem;
+      flex-flow: column wrap;
+      margin-left: 1.5rem;
       font-size: 12px;
-      p {
+      .text_line {
         vertical-align: middle;
 
         b {
@@ -405,7 +638,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
           color: #fff;
           vertical-align: baseline;
         }
-        & + p {
+        & + .text_line {
           margin-top: 8px;
         }
       }
