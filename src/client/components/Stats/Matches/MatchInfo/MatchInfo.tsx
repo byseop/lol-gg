@@ -4,7 +4,11 @@ import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
-import type { MatchTypes } from 'src/server/api/match/types';
+import type {
+  MatchTypes,
+  Participant,
+  ParticipantIdentity
+} from 'src/server/api/match/types';
 import type {
   GameData,
   SummonerSpell,
@@ -15,6 +19,7 @@ import type {
 import type { Recent10GamesStatsTypes } from '../../StatsContainer';
 import type { ItemsData } from 'src/server/api/data/types';
 import SlotContainer from './Slot';
+import { Link } from 'react-router-dom';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -79,8 +84,39 @@ function MatchInfo({
       stats: temp.stats
     };
   }, [data, playerPID, gameDataState]);
+
+  const participants = useMemo(() => {
+    let temp: ((Participant & ParticipantIdentity) | null)[] = [];
+    for (let i = 0; i < 10; i++) {
+      if (data && data.matchData.participantIdentities) {
+        temp.push({
+          ...data.matchData.participantIdentities[i],
+          ...data.matchData.participants[i]
+        });
+      }
+    }
+    return temp.reduce(
+      (acc, cur) => {
+        if (cur?.teamId === 100) {
+          return {
+            ...acc,
+            team100: acc.team100.concat(cur)
+          };
+        }
+        return {
+          ...acc,
+          team200: acc.team200.concat(cur)
+        };
+      },
+      { team100: [], team200: [] } as {
+        team100: ((Participant & ParticipantIdentity) | null)[];
+        team200: ((Participant & ParticipantIdentity) | null)[];
+      }
+    );
+  }, [data]);
   console.log(data);
   console.log(player);
+  console.log(participants);
   console.log(gameDataState?.gameData);
 
   useEffect(() => {
@@ -103,7 +139,7 @@ function MatchInfo({
 
   return (
     <MatchInfoDiv isWin={player?.stats.win}>
-      {loading && <Spinner />}
+      {loading && <Spinner minHeight={163} />}
       {!loading && data && player && (
         <div className="match_info_wrap">
           <div className="info_head">
@@ -122,10 +158,7 @@ function MatchInfo({
             <div className="champ">
               <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/${data.matchData.gameVersion.slice(
-                    0,
-                    5
-                  )}.1/img/champion/${player.info.champ?.id}.png`}
+                  src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
                 />
               </picture>
@@ -296,6 +329,72 @@ function MatchInfo({
                 </div>
               </div>
             </div>
+            <div className="participants">
+              <div className="ptcp_left">
+                {participants.team100.map((pData) => (
+                  <p
+                    style={
+                      pData?.player.summonerId === encryptedSummonerId
+                        ? {
+                            fontWeight: 'bold',
+                            color: '#fff'
+                          }
+                        : undefined
+                    }
+                  >
+                    <Link to={`/stats/@${pData?.player.summonerName}`}>
+                      <span>{pData?.player.summonerName}</span>
+                      <span>
+                        <picture>
+                          <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/${
+                              gameDataState?.gameData.version
+                            }/img/champion/${
+                              gameDataState?.gameData.champs?.find(
+                                (c) => c.key === pData?.championId.toString()
+                              )?.id
+                            }.png`}
+                            alt={pData?.player.summonerName as string}
+                          />
+                        </picture>
+                      </span>
+                    </Link>
+                  </p>
+                ))}
+              </div>
+              <div className="ptcp_right">
+                {participants.team200.map((pData) => (
+                  <p
+                    style={
+                      pData?.player.summonerId === encryptedSummonerId
+                        ? {
+                            fontWeight: 'bold',
+                            color: '#fff'
+                          }
+                        : undefined
+                    }
+                  >
+                    <Link to={`/stats/@${pData?.player.summonerName}`}>
+                      <span>
+                        <picture>
+                          <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/${
+                              gameDataState?.gameData.version
+                            }/img/champion/${
+                              gameDataState?.gameData.champs?.find(
+                                (c) => c.key === pData?.championId.toString()
+                              )?.id
+                            }.png`}
+                            alt={pData?.player.summonerName as string}
+                          />
+                        </picture>
+                      </span>
+                      <span>{pData?.player.summonerName}</span>
+                    </Link>
+                  </p>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -410,7 +509,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
     }
 
     .stats_square_slot {
-      margin-left: 2rem;
+      margin-left: 1.5rem;
       display: flex;
       align-items: center;
       .stats_square_wrap {
@@ -452,9 +551,74 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
         }
 
         .items {
+          width: 166px;
           height: 84px;
           justify-content: center;
           align-items: center;
+        }
+      }
+    }
+
+    .participants {
+      margin-left: calc(1.5rem - 10px);
+      margin-right: -10px;
+      font-size: 12px;
+      display: flex;
+
+      > div {
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: space-between;
+        margin: 0 10px;
+
+        &.ptcp_left {
+          text-align: right;
+        }
+        p {
+          & + p {
+            margin-top: -6px;
+          }
+          span + span {
+            margin-left: 5px;
+          }
+          a {
+            color: inherit;
+            text-decoration: none;
+            span {
+              display: inline-block;
+              vertical-align: middle;
+              max-width: 80px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+          }
+        }
+
+        picture {
+          display: inline-block;
+          width: 24px;
+          height: 24px;
+          border-radius: 100%;
+          overflow: hidden;
+          position: relative;
+
+          &:after {
+            position: absolute;
+            left: 0;
+            top: 0;
+            content: '';
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            border: 2px solid #a17f3e;
+            box-sizing: border-box;
+          }
+
+          img {
+            display: block;
+            width: 100%;
+          }
         }
       }
     }
@@ -463,7 +627,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
       display: flex;
       justify-content: center;
       flex-flow: column wrap;
-      margin-left: 2rem;
+      margin-left: 1.5rem;
       font-size: 12px;
       .text_line {
         vertical-align: middle;

@@ -71,6 +71,7 @@ export default function MatchInfoContainer({
           participantId
           player {
             summonerId
+            summonerName
           }
         }
         teams {
