@@ -71,6 +71,7 @@ export default function Stats({
 }
 
 const StatsScreen = styled.div`
+  padding-bottom: 4rem;
   .stats_wrap {
     display: flex;
     margin-top: 2rem;
