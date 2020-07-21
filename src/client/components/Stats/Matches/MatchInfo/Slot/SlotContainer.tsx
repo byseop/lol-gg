@@ -6,18 +6,18 @@ type SlotContainerPropTypes = {} & SlotPropTypes;
 
 export default function SlotContainer({
   index,
-  gameVersion,
   data,
   type,
-  id
+  id,
+  image
 }: SlotContainerPropTypes) {
   return (
     <Slot
       index={index}
-      gameVersion={gameVersion}
       data={data}
       type={type}
       id={id}
+      image={image}
     />
   );
 }
