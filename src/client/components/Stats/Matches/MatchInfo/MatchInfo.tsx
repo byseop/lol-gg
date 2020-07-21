@@ -184,38 +184,26 @@ function MatchInfo({
               <div className="stats_square_wrap">
                 <div className="spell">
                   {player.info.spells?.map((spell) => (
-                    <div key={`${index}-${spell.id}`}>
-                      <picture data-tip data-for={`spell-${index}-${spell.id}`}>
-                        <img
-                          src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
-                          alt={spell.id}
-                        />
-                      </picture>
-                      <ReactTooltip
-                        id={`spell-${index}-${spell.id}`}
-                        effect="solid"
-                      >
-                        <span className="tooltip-text">{spell.name}</span>
-                      </ReactTooltip>
-                    </div>
+                    <SlotContainer
+                      index={index}
+                      data={spell}
+                      type={'spell'}
+                      id={spell.id}
+                      key={`${index}-${spell.id}`}
+                      image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
+                    />
                   ))}
                 </div>
                 <div className="rune">
                   {player.info.runes.map((rune) => (
-                    <div key={`${index}-${rune.id}`}>
-                      <picture data-tip data-for={`rune-${index}-${rune.id}`}>
-                        <img
-                          src={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
-                          alt={rune.name}
-                        />
-                      </picture>
-                      <ReactTooltip
-                        id={`rune-${index}-${rune.id}`}
-                        effect="solid"
-                      >
-                        <span className="tooltip-text">{rune.name}</span>
-                      </ReactTooltip>
-                    </div>
+                    <SlotContainer
+                      index={index}
+                      data={rune}
+                      type={'rune'}
+                      id={rune.id}
+                      key={`${index}-${rune.id}`}
+                      image={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
+                    />
                   ))}
                 </div>
               </div>
@@ -316,14 +304,13 @@ function MatchInfo({
                       key={`${index}-${item}`}
                       id={item}
                       index={index}
-                      gameVersion={gameDataState?.gameData.version as string}
                       data={
-                        gameDataState?.gameData.items &&
-                        gameDataState?.gameData.items[
+                        gameDataState?.gameData.items?.[
                           item.toString() as keyof ItemsData[]
                         ]
                       }
                       type={'item'}
+                      image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/item/${item}.png`}
                     />
                   ))}
                 </div>

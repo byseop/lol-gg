@@ -3,20 +3,20 @@ import ReactTooltip from 'react-tooltip';
 
 export type SlotPropTypes = {
   index: number;
-  gameVersion: string;
   data: any;
   type: string;
   id: string | number;
+  image: string;
 };
 
-function Slot({ index, gameVersion, data, type, id }: SlotPropTypes) {
+function Slot({ index, data, type, id, image }: SlotPropTypes) {
   return (
     <div>
       {id ? (
         <>
           <picture data-tip data-for={`${type}-${index}-${id}`}>
             <img
-              src={`https://ddragon.leagueoflegends.com/cdn/${gameVersion}/img/${type}/${id}.png`}
+              src={image}
               alt={String(id)}
             />
           </picture>
