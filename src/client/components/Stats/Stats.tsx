@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import ProfileContainer from './Profile';
 import type {
   SummonerInfoTypes,
@@ -25,6 +25,8 @@ type StatsPropTypes = {
   >;
 };
 
+const maxGameCount = 50;
+
 export default function Stats({
   summonerInfo,
   loading,
@@ -33,39 +35,76 @@ export default function Stats({
   matchLoading,
   setRecent10GamesStats
 }: StatsPropTypes) {
+  const observeRoot = useRef<HTMLDivElement>(null);
+
+  const onIntersect = useCallback(
+    ([entry]: IntersectionObserverEntry[]) => {
+      // More fetch function
+      if (entry.isIntersecting) {
+        setMatchOption((prev) => ({
+          ...prev,
+          endIndex:
+            prev.endIndex &&
+            (prev.endIndex >= maxGameCount ? maxGameCount : prev.endIndex + 10)
+        }));
+      }
+    },
+    [setMatchOption]
+  );
+
+  useEffect(() => {
+    // Fetching more matches using IntersectionObserver
+    if (!observeRoot || !matchData) return;
+
+    const observeTargetArr = document.getElementsByClassName('match');
+    const observeTarget = observeTargetArr[observeTargetArr.length - 1];
+
+    const screenObserver = new IntersectionObserver(onIntersect, {
+      threshold: 1
+      // root: observeRoot.current
+    });
+
+    if (observeTarget && !loading && !matchLoading) {
+      screenObserver.observe(observeTarget);
+    }
+
+    return () => {
+      if (screenObserver) {
+        screenObserver.disconnect();
+      }
+    };
+  }, [observeRoot, onIntersect, matchData, loading, matchLoading]);
+
   return (
     <>
       <Header />
-      {summonerInfo &&
-        summonerInfo.name &&
-        summonerInfo.profileIconId &&
-        !loading && (
-          <StatsScreen>
-            <Helmet>
-              <title>{summonerInfo.name} - LoL GG Stats</title>
-            </Helmet>
-            <Inner>
-              <ProfileContainer
-                name={summonerInfo.name}
-                profileIconId={summonerInfo.profileIconId}
+      {summonerInfo && summonerInfo.name && summonerInfo.profileIconId && (
+        <StatsScreen ref={observeRoot}>
+          <Helmet>
+            <title>{summonerInfo.name} - LoL GG Stats</title>
+          </Helmet>
+          <Inner>
+            <ProfileContainer
+              name={summonerInfo.name}
+              profileIconId={summonerInfo.profileIconId}
+            />
+            <div className="stats_wrap">
+              <LeagueContainer
+                encryptedSummonerId={summonerInfo.id as string}
+                setMatchOption={setMatchOption}
+                setRecent10GamesStats={setRecent10GamesStats}
               />
-              <div className="stats_wrap">
-                <LeagueContainer
-                  encryptedSummonerId={summonerInfo.id as string}
-                  setMatchOption={setMatchOption}
-                  setRecent10GamesStats={setRecent10GamesStats}
-                />
-                <MatchesContainer
-                  matchData={matchData}
-                  matchLoading={matchLoading}
-                  encryptedSummonerId={summonerInfo.id as string}
-                  setRecent10GamesStats={setRecent10GamesStats}
-                />
-              </div>
-            </Inner>
-          </StatsScreen>
-        )}
-      {loading && <Spinner minHeight={78} />}
+              <MatchesContainer
+                matchData={matchData}
+                matchLoading={matchLoading}
+                encryptedSummonerId={summonerInfo.id as string}
+                setRecent10GamesStats={setRecent10GamesStats}
+              />
+            </div>
+          </Inner>
+        </StatsScreen>
+      )}
+      {loading && !matchData ? <Spinner minHeight={78} /> : null}
     </>
   );
 }

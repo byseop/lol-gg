@@ -138,7 +138,7 @@ function MatchInfo({
   }, [setRecent10GamesStats, player]);
 
   return (
-    <MatchInfoDiv isWin={player?.stats.win}>
+    <MatchInfoDiv isWin={player?.stats.win} className="match">
       {loading && <Spinner minHeight={163} />}
       {!loading && data && player && (
         <div className="match_info_wrap">
@@ -320,6 +320,7 @@ function MatchInfo({
               <div className="ptcp_left">
                 {participants.team100.map((pData) => (
                   <p
+                    key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={
                       pData?.player.summonerId === encryptedSummonerId
                         ? {
@@ -352,6 +353,7 @@ function MatchInfo({
               <div className="ptcp_right">
                 {participants.team200.map((pData) => (
                   <p
+                    key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={
                       pData?.player.summonerId === encryptedSummonerId
                         ? {
