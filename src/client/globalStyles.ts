@@ -17,6 +17,7 @@ const GlobalStyles = createGlobalStyle`
   .App {
     width: 100%;
     min-height: 100vh;
+    min-width: 1200px;
     background: url('/assets/images/common/profile-page.jpg') fixed no-repeat center center;
   }
 `;

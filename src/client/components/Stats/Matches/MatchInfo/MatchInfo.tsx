@@ -576,7 +576,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
             span {
               display: inline-block;
               vertical-align: middle;
-              max-width: 80px;
+              max-width: 79px;
               overflow: hidden;
               white-space: nowrap;
               text-overflow: ellipsis;

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import ProfileContainer from './Profile';
 import type {
   SummonerInfoTypes,
@@ -35,8 +35,6 @@ export default function Stats({
   matchLoading,
   setRecent10GamesStats
 }: StatsPropTypes) {
-  const observeRoot = useRef<HTMLDivElement>(null);
-
   const onIntersect = useCallback(
     ([entry]: IntersectionObserverEntry[]) => {
       // More fetch function
@@ -54,14 +52,13 @@ export default function Stats({
 
   useEffect(() => {
     // Fetching more matches using IntersectionObserver
-    if (!observeRoot || !matchData) return;
+    if (!matchData) return;
 
     const observeTargetArr = document.getElementsByClassName('match');
     const observeTarget = observeTargetArr[observeTargetArr.length - 1];
 
     const screenObserver = new IntersectionObserver(onIntersect, {
       threshold: 1
-      // root: observeRoot.current
     });
 
     if (observeTarget && !loading && !matchLoading) {
@@ -73,13 +70,13 @@ export default function Stats({
         screenObserver.disconnect();
       }
     };
-  }, [observeRoot, onIntersect, matchData, loading, matchLoading]);
+  }, [onIntersect, matchData, loading, matchLoading]);
 
   return (
     <>
       <Header />
       {summonerInfo && summonerInfo.name && summonerInfo.profileIconId && (
-        <StatsScreen ref={observeRoot}>
+        <StatsScreen>
           <Helmet>
             <title>{summonerInfo.name} - LoL GG Stats</title>
           </Helmet>
