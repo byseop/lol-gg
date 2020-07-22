@@ -25,7 +25,7 @@ function Matches({
 }: MatchesPropTypes) {
   return (
     <MatchesWrap>
-      {matchLoading && <Spinner />}
+      {matchLoading && !matchData && <Spinner />}
       {matchData?.map((match: MatchDataTypes, i) => (
         <MatchInfoContainer
           key={match.gameId}
@@ -36,6 +36,7 @@ function Matches({
           setRecent10GamesStats={setRecent10GamesStats}
         />
       ))}
+      {matchLoading && matchData && <Spinner minHeight={160} />}
     </MatchesWrap>
   );
 }
