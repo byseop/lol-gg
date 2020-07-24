@@ -24,7 +24,8 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const { nickname } = match.params;
   const [matchOption, setMatchOption] = useState<MatchOptionTypes>({
     endIndex: 10,
-    season: 13
+    season: 13,
+    queue: 420
   });
   const [recent10GamesStats, setRecent10GamesStats] = useState<
     Recent10GamesStatsTypes[]

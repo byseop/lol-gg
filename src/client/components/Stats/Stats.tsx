@@ -25,7 +25,7 @@ type StatsPropTypes = {
   >;
 };
 
-const maxGameCount = 50;
+const maxGameCount = 40;
 
 export default function Stats({
   summonerInfo,

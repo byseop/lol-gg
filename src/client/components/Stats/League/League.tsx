@@ -23,13 +23,13 @@ function League({
   setRecent10GamesStats
 }: LeaguePropTypes) {
   const [selectedLeague, setSelectedLeague] = useState<QueueType | undefined>(
-    undefined
+    'RANKED_SOLO_5x5'
   );
 
   const handleClickLeague = useCallback(
     (queueType: QueueType) => {
       if (selectedLeague === queueType) {
-        setSelectedLeague(undefined);
+        // setSelectedLeague(undefined);
         return;
       }
       setSelectedLeague(queueType);
@@ -42,8 +42,6 @@ function League({
     setRecent10GamesStats([]);
   }, [selectedLeague, handleChangeLeague, setRecent10GamesStats]);
 
-  // TODO: error 처리
-  console.log(data);
   return (
     <LeaguesWrap className="leagues_wrap">
       {loading && <Spinner minHeight={151} />}
