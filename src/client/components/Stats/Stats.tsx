@@ -23,6 +23,7 @@ type StatsPropTypes = {
   setRecent10GamesStats: React.Dispatch<
     React.SetStateAction<Recent10GamesStatsTypes[]>
   >;
+  recent10GamesStats: Recent10GamesStatsTypes[];
 };
 
 const maxGameCount = 40;
@@ -33,7 +34,8 @@ export default function Stats({
   setMatchOption,
   matchData,
   matchLoading,
-  setRecent10GamesStats
+  setRecent10GamesStats,
+  recent10GamesStats
 }: StatsPropTypes) {
   const onIntersect = useCallback(
     ([entry]: IntersectionObserverEntry[]) => {
@@ -96,6 +98,7 @@ export default function Stats({
                 matchLoading={matchLoading}
                 encryptedSummonerId={summonerInfo.id as string}
                 setRecent10GamesStats={setRecent10GamesStats}
+                recent10GamesStats={recent10GamesStats}
               />
             </div>
           </Inner>

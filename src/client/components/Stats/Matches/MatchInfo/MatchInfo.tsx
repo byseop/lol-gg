@@ -4,6 +4,7 @@ import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
+import ChampionPic from './ChampionPic';
 import type {
   MatchTypes,
   Participant,
@@ -114,25 +115,28 @@ function MatchInfo({
       }
     );
   }, [data]);
-  console.log(data);
-  console.log(player);
-  console.log(participants);
-  console.log(gameDataState?.gameData);
+  // console.log(data);
+  // console.log(player);
+  // console.log(participants);
+  // console.log(gameDataState?.gameData);
 
   useEffect(() => {
     if (player) {
       setRecent10GamesStats((prev) => {
-        return [
-          ...prev,
-          {
-            champ: player.info.champ as Champion,
-            kda: {
-              kills: player.stats.kills,
-              deaths: player.stats.deaths,
-              assists: player.stats.assists
+        if (prev.length < 10) {
+          return [
+            ...prev,
+            {
+              champ: player.info.champ as Champion,
+              kda: {
+                kills: player.stats.kills,
+                deaths: player.stats.deaths,
+                assists: player.stats.assists
+              }
             }
-          }
-        ];
+          ];
+        }
+        return prev;
       });
     }
   }, [setRecent10GamesStats, player]);
@@ -156,7 +160,7 @@ function MatchInfo({
           </div>
           <div className="match_info">
             <div className="champ">
-              <picture data-tip data-for={`matchChamp-${index}`}>
+              {/* <picture data-tip data-for={`matchChamp-${index}`}>
                 <img
                   src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/champion/${player.info.champ?.id}.png`}
                   alt={player.info.champ?.id}
@@ -164,7 +168,16 @@ function MatchInfo({
               </picture>
               <ReactTooltip id={`matchChamp-${index}`} effect="solid">
                 <span className="tooltip-text">{player.info.champ?.name}</span>
-              </ReactTooltip>
+              </ReactTooltip> */}
+              <ChampionPic
+                size={60}
+                name={player.info.champ?.name}
+                index={index}
+                id={player.info.champ?.id}
+                image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/champion/${player.info.champ?.id}.png`}
+                useTooltip={true}
+                isWin={player?.stats.win}
+              />
               <div className="lane">
                 {player.info.timeline.lane !== 'NONE' &&
                   data.matchData.queueId !== 450 && (
@@ -318,7 +331,7 @@ function MatchInfo({
             </div>
             <div className="participants">
               <div className="ptcp_left">
-                {participants.team100.map((pData) => (
+                {participants.team100.map((pData, pDataIndex) => (
                   <p
                     key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={
@@ -332,26 +345,24 @@ function MatchInfo({
                   >
                     <Link to={`/stats/@${pData?.player.summonerName}`}>
                       <span>{pData?.player.summonerName}</span>
-                      <span>
-                        <picture>
-                          <img
-                            src={`https://ddragon.leagueoflegends.com/cdn/${
-                              gameDataState?.gameData.version
-                            }/img/champion/${
-                              gameDataState?.gameData.champs?.find(
-                                (c) => c.key === pData?.championId.toString()
-                              )?.id
-                            }.png`}
-                            alt={pData?.player.summonerName as string}
-                          />
-                        </picture>
-                      </span>
+                      <ChampionPic
+                        size={24}
+                        index={pDataIndex}
+                        id={player.info.champ?.id}
+                        image={`https://ddragon.leagueoflegends.com/cdn/${
+                          gameDataState?.gameData.version
+                        }/img/champion/${
+                          gameDataState?.gameData.champs?.find(
+                            (c) => c.key === pData?.championId.toString()
+                          )?.id
+                        }.png`}
+                      />
                     </Link>
                   </p>
                 ))}
               </div>
               <div className="ptcp_right">
-                {participants.team200.map((pData) => (
+                {participants.team200.map((pData, pDataIndex) => (
                   <p
                     key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={
@@ -364,20 +375,18 @@ function MatchInfo({
                     }
                   >
                     <Link to={`/stats/@${pData?.player.summonerName}`}>
-                      <span>
-                        <picture>
-                          <img
-                            src={`https://ddragon.leagueoflegends.com/cdn/${
-                              gameDataState?.gameData.version
-                            }/img/champion/${
-                              gameDataState?.gameData.champs?.find(
-                                (c) => c.key === pData?.championId.toString()
-                              )?.id
-                            }.png`}
-                            alt={pData?.player.summonerName as string}
-                          />
-                        </picture>
-                      </span>
+                      <ChampionPic
+                        size={24}
+                        index={pDataIndex}
+                        id={player.info.champ?.id}
+                        image={`https://ddragon.leagueoflegends.com/cdn/${
+                          gameDataState?.gameData.version
+                        }/img/champion/${
+                          gameDataState?.gameData.champs?.find(
+                            (c) => c.key === pData?.championId.toString()
+                          )?.id
+                        }.png`}
+                      />
                       <span>{pData?.player.summonerName}</span>
                     </Link>
                   </p>
@@ -452,21 +461,6 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
       flex-flow: column wrap;
       justify-items: center;
       align-items: center;
-      > picture {
-        display: block;
-        width: 60px;
-        height: 60px;
-        border-radius: 100%;
-        overflow: hidden;
-        box-sizing: border-box;
-        border: 2px solid ${(props) => (props.isWin ? '#1dc49b' : '#e54787')};
-        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-
-        img {
-          display: block;
-          width: 100%;
-        }
-      }
     }
 
     .lane {
@@ -498,7 +492,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
     }
 
     .stats_square_slot {
-      margin-left: 1.5rem;
+      margin-left: 1.4rem;
       display: flex;
       align-items: center;
       .stats_square_wrap {
@@ -583,32 +577,6 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
             }
           }
         }
-
-        picture {
-          display: inline-block;
-          width: 24px;
-          height: 24px;
-          border-radius: 100%;
-          overflow: hidden;
-          position: relative;
-
-          &:after {
-            position: absolute;
-            left: 0;
-            top: 0;
-            content: '';
-            width: 100%;
-            height: 100%;
-            border-radius: 100%;
-            border: 2px solid #a17f3e;
-            box-sizing: border-box;
-          }
-
-          img {
-            display: block;
-            width: 100%;
-          }
-        }
       }
     }
 
@@ -616,7 +584,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
       display: flex;
       justify-content: center;
       flex-flow: column wrap;
-      margin-left: 1.5rem;
+      margin-left: 1.4rem;
       font-size: 12px;
       .text_line {
         vertical-align: middle;

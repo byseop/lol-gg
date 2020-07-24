@@ -12,6 +12,7 @@ export type MatcheContainerPropTypes = {
   setRecent10GamesStats: React.Dispatch<
     React.SetStateAction<Recent10GamesStatsTypes[]>
   >;
+  recent10GamesStats: Recent10GamesStatsTypes[]
 };
 
 const gameDataSelector = selector({
@@ -25,7 +26,8 @@ export default function MatchesContainer({
   matchData,
   matchLoading,
   encryptedSummonerId,
-  setRecent10GamesStats
+  setRecent10GamesStats,
+  recent10GamesStats
 }: MatcheContainerPropTypes) {
   const gameDataState = useRecoilValue(gameDataSelector);
   return (
@@ -35,6 +37,7 @@ export default function MatchesContainer({
       encryptedSummonerId={encryptedSummonerId}
       gameDataState={gameDataState}
       setRecent10GamesStats={setRecent10GamesStats}
+      recent10GamesStats={recent10GamesStats}
     />
   );
 }

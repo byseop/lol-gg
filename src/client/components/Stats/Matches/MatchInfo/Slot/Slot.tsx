@@ -44,6 +44,8 @@ export default React.memo(Slot);
 const SlotTooltip = styled(ReactTooltip)`
   display: flex;
   padding: 1.5rem;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 1;
   picture {
     width: 72px;
     height: 72px;

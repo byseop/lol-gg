@@ -107,6 +107,7 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
       matchLoading={matchLoading}
       setMatchOption={setMatchOption}
       setRecent10GamesStats={setRecent10GamesStats}
+      recent10GamesStats={recent10GamesStats}
     />
   );
 }
