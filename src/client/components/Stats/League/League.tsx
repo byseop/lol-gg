@@ -22,6 +22,7 @@ function League({
   handleChangeLeague,
   setRecent10GamesStats
 }: LeaguePropTypes) {
+  console.log(data);
   const [selectedLeague, setSelectedLeague] = useState<QueueType | undefined>(
     'RANKED_SOLO_5x5'
   );
@@ -41,6 +42,12 @@ function League({
     handleChangeLeague(selectedLeague);
     setRecent10GamesStats([]);
   }, [selectedLeague, handleChangeLeague, setRecent10GamesStats]);
+
+  useEffect(() => {
+    // Initializing 'matchOption' when searched user changed
+    if (!data) return;
+    setSelectedLeague('RANKED_SOLO_5x5');
+  }, [data]);
 
   return (
     <LeaguesWrap className="leagues_wrap">

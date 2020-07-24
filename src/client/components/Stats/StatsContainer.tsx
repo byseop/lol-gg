@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Stats from './Stats';
 import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
@@ -20,13 +20,17 @@ export type Recent10GamesStatsTypes = {
   };
 };
 
+const initialMatchOption = {
+  endIndex: 10,
+  season: 13,
+  queue: 420
+};
+
 export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const { nickname } = match.params;
-  const [matchOption, setMatchOption] = useState<MatchOptionTypes>({
-    endIndex: 10,
-    season: 13,
-    queue: 420
-  });
+  const [matchOption, setMatchOption] = useState<MatchOptionTypes>(
+    initialMatchOption
+  );
   const [recent10GamesStats, setRecent10GamesStats] = useState<
     Recent10GamesStatsTypes[]
   >([]);
@@ -85,6 +89,12 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
     skip: !nickname || !matchOption,
     variables: { nickname, matchOption }
   });
+
+  useEffect(() => {
+    // Initializing 'matchOption' when searched user changed
+    if (!nickname) return;
+    setMatchOption(initialMatchOption);
+  }, [nickname]);
 
   // console.log(loading, error, data);
   // console.log(matchLoading, matchError, matchData);
