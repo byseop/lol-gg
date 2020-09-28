@@ -3,8 +3,6 @@ import type { MatchDataTypes } from '../types';
 import styled from 'styled-components';
 import MatchInfoContainer from './MatchInfo';
 import Spinner from '../../Layout/Spinner';
-import RecentGamesSummaryContainer from './RecentGamesSummary';
-import type { Recent10GamesStatsTypes } from '../StatsContainer';
 import type {
   GameData,
   SummonerSpell,
@@ -20,10 +18,6 @@ export type MatchesPropTypes = {
   matchLoading: boolean;
   encryptedSummonerId: string;
   gameDataState: GameData | null;
-  setRecent10GamesStats: React.Dispatch<
-    React.SetStateAction<Recent10GamesStatsTypes[]>
-  >;
-  recent10GamesStats: Recent10GamesStatsTypes[];
 };
 
 export type MatchInfoTypes = {
@@ -48,8 +42,6 @@ function Matches({
   matchLoading,
   encryptedSummonerId,
   gameDataState,
-  setRecent10GamesStats,
-  recent10GamesStats
 }: MatchesPropTypes) {
   const getGameInfoes = useCallback(({ data, playerPID }:
     { data: MatchTypes; playerPID: number | undefined }): MatchInfoTypes | undefined => {
@@ -124,9 +116,6 @@ function Matches({
   return (
     <MatchesWrap>
       {matchLoading && !matchData && <Spinner />}
-      {!matchLoading && (
-        <RecentGamesSummaryContainer recent10GamesStats={recent10GamesStats} />
-      )}
       {matchData?.map((match: MatchDataTypes, i) => (
         <MatchInfoContainer
           key={match.gameId}
@@ -134,7 +123,6 @@ function Matches({
           encryptedSummonerId={encryptedSummonerId}
           gameDataState={gameDataState}
           index={i}
-          setRecent10GamesStats={setRecent10GamesStats}
           getGameInfoes={getGameInfoes}
         />
       ))}

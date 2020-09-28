@@ -10,7 +10,6 @@ import SlotContainer from './Slot';
 import { Link } from 'react-router-dom';
 import type { GameData } from 'src/server/api/data/types';
 import type { MatchTypes } from 'src/server/api/match/types';
-import type { Recent10GamesStatsTypes } from '../../StatsContainer';
 import type { ItemsData } from 'src/server/api/data/types';
 import type { MatchInfoTypes } from '../Matches';
 
@@ -20,9 +19,6 @@ type MatchInfoPropTypes = {
   encryptedSummonerId: string;
   gameDataState: GameData | null;
   index: number;
-  setRecent10GamesStats: React.Dispatch<
-    React.SetStateAction<Recent10GamesStatsTypes[]>
-  >;
   getGameInfoes: ({
     data,
     playerPID
@@ -40,7 +36,6 @@ function MatchInfo({
   encryptedSummonerId,
   gameDataState,
   index,
-  setRecent10GamesStats,
   getGameInfoes
 }: MatchInfoPropTypes) {
   const [matchInfo, setMatchInfo] = useState<MatchInfoTypes>();

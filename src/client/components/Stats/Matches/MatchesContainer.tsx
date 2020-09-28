@@ -3,16 +3,11 @@ import Matches from './Matches';
 import type { MatchDataTypes } from '../types';
 import { useRecoilValue, selector } from 'recoil';
 import { gameDataAtom } from 'src/client/pages/MainRoutes';
-import type { Recent10GamesStatsTypes } from '../StatsContainer';
 
 export type MatcheContainerPropTypes = {
   matchData: MatchDataTypes[] | undefined;
   matchLoading: boolean;
   encryptedSummonerId: string;
-  setRecent10GamesStats: React.Dispatch<
-    React.SetStateAction<Recent10GamesStatsTypes[]>
-  >;
-  recent10GamesStats: Recent10GamesStatsTypes[]
 };
 
 const gameDataSelector = selector({
@@ -26,8 +21,6 @@ export default function MatchesContainer({
   matchData,
   matchLoading,
   encryptedSummonerId,
-  setRecent10GamesStats,
-  recent10GamesStats
 }: MatcheContainerPropTypes) {
   const gameDataState = useRecoilValue(gameDataSelector);
   return (
@@ -36,8 +29,6 @@ export default function MatchesContainer({
       matchLoading={matchLoading}
       encryptedSummonerId={encryptedSummonerId}
       gameDataState={gameDataState}
-      setRecent10GamesStats={setRecent10GamesStats}
-      recent10GamesStats={recent10GamesStats}
     />
   );
 }

@@ -7,18 +7,8 @@ import type {
   MatchOptionTypes,
   SummonerDataTypes
 } from './types';
-import type { Champion } from 'src/server/api/data/types';
 
 const statsClient = new ApolloClient({ uri: '/.netlify/functions/stats' });
-
-export type Recent10GamesStatsTypes = {
-  champ: Champion;
-  kda: {
-    kills: number;
-    deaths: number;
-    assists: number;
-  };
-};
 
 const initialMatchOption = {
   endIndex: 10,
@@ -31,10 +21,6 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const [matchOption, setMatchOption] = useState<MatchOptionTypes>(
     initialMatchOption
   );
-  const [recent10GamesStats, setRecent10GamesStats] = useState<
-    Recent10GamesStatsTypes[]
-  >([]);
-  // console.log(recent10GamesStats);
 
   const QUERY_SUMMONER = gql`
     query($nickname: String!) {
@@ -106,8 +92,6 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
       matchData={matchData?.summonerData?.matchesInfo?.matches}
       matchLoading={matchLoading}
       setMatchOption={setMatchOption}
-      setRecent10GamesStats={setRecent10GamesStats}
-      recent10GamesStats={recent10GamesStats}
     />
   );
 }
