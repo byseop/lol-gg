@@ -1,19 +1,32 @@
 import React from 'react';
 import styled from 'styled-components';
+import URL from 'src/client/constants/url';
+import { gameDataAtom } from 'src/client/pages/MainRoutes';
+import { useRecoilValue, selector } from 'recoil';
 
 export type ProfilePropTypes = {
   name?: string;
   profileIconId?: string;
 };
 
+const { DDRAGON, IMG, CDN } = URL;
+
+const gameDataSelector = selector({
+  key: 'gameDataUsingProfile',
+  get: ({ get }) => {
+    return get(gameDataAtom);
+  }
+});
+
 export default function Profile({ name, profileIconId }: ProfilePropTypes) {
+  const gameDataState = useRecoilValue(gameDataSelector);
   return (
     <ProfileDiv>
       <div className="profile_icon">
         <picture>
           {profileIconId && (
             <img
-              src={`/assets/images/profileicon/${profileIconId}.png`}
+              src={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/profileicon/${profileIconId}.png`}
               alt="profile icon"
             />
           )}

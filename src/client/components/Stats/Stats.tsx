@@ -12,7 +12,6 @@ import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import LeagueContainer from './League';
 import MatchesContainer from './Matches';
-import type { Recent10GamesStatsTypes } from './StatsContainer';
 
 type StatsPropTypes = {
   summonerInfo: SummonerInfoTypes | undefined;
@@ -20,12 +19,9 @@ type StatsPropTypes = {
   matchData: MatchDataTypes[] | undefined;
   matchLoading: boolean;
   setMatchOption: React.Dispatch<React.SetStateAction<MatchOptionTypes>>;
-  setRecent10GamesStats: React.Dispatch<
-    React.SetStateAction<Recent10GamesStatsTypes[]>
-  >;
 };
 
-const maxGameCount = 50;
+const maxGameCount = 40;
 
 export default function Stats({
   summonerInfo,
@@ -33,7 +29,6 @@ export default function Stats({
   setMatchOption,
   matchData,
   matchLoading,
-  setRecent10GamesStats
 }: StatsPropTypes) {
   const onIntersect = useCallback(
     ([entry]: IntersectionObserverEntry[]) => {
@@ -89,13 +84,11 @@ export default function Stats({
               <LeagueContainer
                 encryptedSummonerId={summonerInfo.id as string}
                 setMatchOption={setMatchOption}
-                setRecent10GamesStats={setRecent10GamesStats}
               />
               <MatchesContainer
                 matchData={matchData}
                 matchLoading={matchLoading}
                 encryptedSummonerId={summonerInfo.id as string}
-                setRecent10GamesStats={setRecent10GamesStats}
               />
             </div>
           </Inner>

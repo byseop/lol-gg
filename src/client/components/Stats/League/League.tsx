@@ -4,32 +4,27 @@ import type { ApolloError } from 'apollo-boost';
 import Spinner from '../../Layout/Spinner';
 import capitalize from 'src/client/utils/capitalize';
 import styled from 'styled-components';
-import type { Recent10GamesStatsTypes } from '../StatsContainer';
 
 export type LeaguePropTypes = {
   data: LeagueTypes | undefined;
   loading: boolean;
   error: ApolloError | undefined;
   handleChangeLeague: (queueType: QueueType) => void;
-  setRecent10GamesStats: React.Dispatch<
-    React.SetStateAction<Recent10GamesStatsTypes[]>
-  >;
 };
 
 function League({
   data,
   loading /*error*/,
   handleChangeLeague,
-  setRecent10GamesStats
 }: LeaguePropTypes) {
   const [selectedLeague, setSelectedLeague] = useState<QueueType | undefined>(
-    undefined
+    'RANKED_SOLO_5x5'
   );
 
   const handleClickLeague = useCallback(
     (queueType: QueueType) => {
       if (selectedLeague === queueType) {
-        setSelectedLeague(undefined);
+        // setSelectedLeague(undefined);
         return;
       }
       setSelectedLeague(queueType);
@@ -39,11 +34,14 @@ function League({
 
   useEffect(() => {
     handleChangeLeague(selectedLeague);
-    setRecent10GamesStats([]);
-  }, [selectedLeague, handleChangeLeague, setRecent10GamesStats]);
+  }, [selectedLeague, handleChangeLeague]);
 
-  // TODO: error 처리
-  console.log(data);
+  useEffect(() => {
+    // Initializing 'matchOption' when searched user changed
+    if (!data) return;
+    setSelectedLeague('RANKED_SOLO_5x5');
+  }, [data]);
+
   return (
     <LeaguesWrap className="leagues_wrap">
       {loading && <Spinner minHeight={151} />}

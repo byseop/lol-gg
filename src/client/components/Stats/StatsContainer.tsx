@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Stats from './Stats';
 import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
@@ -7,29 +7,20 @@ import type {
   MatchOptionTypes,
   SummonerDataTypes
 } from './types';
-import type { Champion } from 'src/server/api/data/types';
 
 const statsClient = new ApolloClient({ uri: '/.netlify/functions/stats' });
 
-export type Recent10GamesStatsTypes = {
-  champ: Champion;
-  kda: {
-    kills: number;
-    deaths: number;
-    assists: number;
-  };
+const initialMatchOption = {
+  endIndex: 10,
+  season: 13,
+  queue: 420
 };
 
 export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const { nickname } = match.params;
-  const [matchOption, setMatchOption] = useState<MatchOptionTypes>({
-    endIndex: 10,
-    season: 13
-  });
-  const [recent10GamesStats, setRecent10GamesStats] = useState<
-    Recent10GamesStatsTypes[]
-  >([]);
-  console.log(recent10GamesStats);
+  const [matchOption, setMatchOption] = useState<MatchOptionTypes>(
+    initialMatchOption
+  );
 
   const QUERY_SUMMONER = gql`
     query($nickname: String!) {
@@ -85,6 +76,12 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
     variables: { nickname, matchOption }
   });
 
+  useEffect(() => {
+    // Initializing 'matchOption' when searched user changed
+    if (!nickname) return;
+    setMatchOption(initialMatchOption);
+  }, [nickname]);
+
   // console.log(loading, error, data);
   // console.log(matchLoading, matchError, matchData);
 
@@ -95,7 +92,6 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
       matchData={matchData?.summonerData?.matchesInfo?.matches}
       matchLoading={matchLoading}
       setMatchOption={setMatchOption}
-      setRecent10GamesStats={setRecent10GamesStats}
     />
   );
 }

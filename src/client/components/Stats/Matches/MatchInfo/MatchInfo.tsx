@@ -1,25 +1,17 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
-import type {
-  MatchTypes,
-  Participant,
-  ParticipantIdentity
-} from 'src/server/api/match/types';
-import type {
-  GameData,
-  SummonerSpell,
-  RunesReforged,
-  Rune,
-  Champion
-} from 'src/server/api/data/types';
-import type { Recent10GamesStatsTypes } from '../../StatsContainer';
-import type { ItemsData } from 'src/server/api/data/types';
+import ChampionPic from './ChampionPic';
+import URL from 'src/client/constants/url';
 import SlotContainer from './Slot';
 import { Link } from 'react-router-dom';
+import type { GameData } from 'src/server/api/data/types';
+import type { MatchTypes } from 'src/server/api/match/types';
+import type { ItemsData } from 'src/server/api/data/types';
+import type { MatchInfoTypes } from '../Matches';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -27,10 +19,16 @@ type MatchInfoPropTypes = {
   encryptedSummonerId: string;
   gameDataState: GameData | null;
   index: number;
-  setRecent10GamesStats: React.Dispatch<
-    React.SetStateAction<Recent10GamesStatsTypes[]>
-  >;
+  getGameInfoes: ({
+    data,
+    playerPID
+  }: {
+    data: MatchTypes;
+    playerPID: number | undefined;
+  }) => MatchInfoTypes | undefined;
 };
+
+const { DDRAGON, CDN, IMG } = URL;
 
 function MatchInfo({
   data,
@@ -38,8 +36,9 @@ function MatchInfo({
   encryptedSummonerId,
   gameDataState,
   index,
-  setRecent10GamesStats
+  getGameInfoes
 }: MatchInfoPropTypes) {
+  const [matchInfo, setMatchInfo] = useState<MatchInfoTypes>();
   const playerPID = useMemo(() => {
     if (!data) return undefined;
     return data.matchData.participantIdentities.find(
@@ -47,95 +46,19 @@ function MatchInfo({
     )?.participantId;
   }, [data, encryptedSummonerId]);
 
-  const player = useMemo(() => {
-    if (!data || !playerPID || !gameDataState) return undefined;
-    const temp = data.matchData.participants.find(
-      (p) => p.participantId === playerPID
-    );
-    if (!temp) return undefined;
-    const champ = gameDataState.gameData.champs?.find(
-      (c) => c.key === temp.championId.toString()
-    );
-    const spells: SummonerSpell[] = [temp.spell1Id, temp.spell2Id].reduce(
-      (acc, cur) =>
-        acc.concat(
-          gameDataState.gameData.spells?.find((s) => s.key === cur.toString())
-        ),
-      [] as any
-    );
-    const primaryRune = gameDataState.gameData.runes
-      ?.find((reforged) => reforged.id === temp?.stats.perkPrimaryStyle)
-      ?.slots[0].runes.find(
-        (primary) => primary.id === temp?.stats.perk0
-      ) as Rune;
-    const secondaryRune = gameDataState.gameData.runes?.find(
-      (reforged) => reforged.id === temp?.stats.perkSubStyle
-    ) as RunesReforged;
-    const runes: [Rune, RunesReforged] = [primaryRune, secondaryRune];
+  useEffect(() => {
+    if (!data) return;
+    const matchInfo = getGameInfoes({ data, playerPID });
+    matchInfo && setMatchInfo(getGameInfoes({ data, playerPID }));
+  }, [data, getGameInfoes, playerPID]);
 
-    return {
-      info: {
-        spells,
-        champ,
-        runes,
-        timeline: temp.timeline,
-        items: []
-      },
-      stats: temp.stats
-    };
-  }, [data, playerPID, gameDataState]);
+  const player = useMemo(() => {
+    return matchInfo?.player;
+  }, [matchInfo]);
 
   const participants = useMemo(() => {
-    let temp: ((Participant & ParticipantIdentity) | null)[] = [];
-    for (let i = 0; i < 10; i++) {
-      if (data && data.matchData.participantIdentities) {
-        temp.push({
-          ...data.matchData.participantIdentities[i],
-          ...data.matchData.participants[i]
-        });
-      }
-    }
-    return temp.reduce(
-      (acc, cur) => {
-        if (cur?.teamId === 100) {
-          return {
-            ...acc,
-            team100: acc.team100.concat(cur)
-          };
-        }
-        return {
-          ...acc,
-          team200: acc.team200.concat(cur)
-        };
-      },
-      { team100: [], team200: [] } as {
-        team100: ((Participant & ParticipantIdentity) | null)[];
-        team200: ((Participant & ParticipantIdentity) | null)[];
-      }
-    );
-  }, [data]);
-  console.log(data);
-  console.log(player);
-  console.log(participants);
-  console.log(gameDataState?.gameData);
-
-  useEffect(() => {
-    if (player) {
-      setRecent10GamesStats((prev) => {
-        return [
-          ...prev,
-          {
-            champ: player.info.champ as Champion,
-            kda: {
-              kills: player.stats.kills,
-              deaths: player.stats.deaths,
-              assists: player.stats.assists
-            }
-          }
-        ];
-      });
-    }
-  }, [setRecent10GamesStats, player]);
+    return matchInfo?.participants;
+  }, [matchInfo]);
 
   return (
     <MatchInfoDiv isWin={player?.stats.win} className="match">
@@ -147,7 +70,7 @@ function MatchInfo({
               {renderGameType(data.matchData.queueId)}
             </span>
             <span className="game_created_time">
-              {moment(data.matchData.gameCreation).fromNow()}
+              {moment(data.matchData.gameCreation + data.matchData.gameDuration).fromNow()}
             </span>
             <span className="game_duration">
               {(data.matchData.gameDuration / 60).toFixed(0)}분
@@ -156,15 +79,15 @@ function MatchInfo({
           </div>
           <div className="match_info">
             <div className="champ">
-              <picture data-tip data-for={`matchChamp-${index}`}>
-                <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/champion/${player.info.champ?.id}.png`}
-                  alt={player.info.champ?.id}
-                />
-              </picture>
-              <ReactTooltip id={`matchChamp-${index}`} effect="solid">
-                <span className="tooltip-text">{player.info.champ?.name}</span>
-              </ReactTooltip>
+              <ChampionPic
+                size={60}
+                name={player.info.champ?.name}
+                index={index}
+                id={player.info.champ?.id}
+                image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/champion/${player.info.champ?.id}.png`}
+                useTooltip={true}
+                isWin={player?.stats.win}
+              />
               <div className="lane">
                 {player.info.timeline.lane !== 'NONE' &&
                   data.matchData.queueId !== 450 && (
@@ -190,7 +113,7 @@ function MatchInfo({
                       type={'spell'}
                       id={spell.id}
                       key={`${index}-${spell.id}`}
-                      image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
+                      image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/spell/${spell.id}.png`}
                     />
                   ))}
                 </div>
@@ -202,7 +125,7 @@ function MatchInfo({
                       type={'rune'}
                       id={rune.id}
                       key={`${index}-${rune.id}`}
-                      image={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
+                      image={`${DDRAGON}/${CDN}/${IMG}/${rune.icon}`}
                     />
                   ))}
                 </div>
@@ -310,7 +233,7 @@ function MatchInfo({
                         ]
                       }
                       type={'item'}
-                      image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/item/${item}.png`}
+                      image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/item/${item}.png`}
                     />
                   ))}
                 </div>
@@ -318,7 +241,7 @@ function MatchInfo({
             </div>
             <div className="participants">
               <div className="ptcp_left">
-                {participants.team100.map((pData) => (
+                {participants?.team100.map((pData, pDataIndex) => (
                   <p
                     key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={
@@ -332,26 +255,24 @@ function MatchInfo({
                   >
                     <Link to={`/stats/@${pData?.player.summonerName}`}>
                       <span>{pData?.player.summonerName}</span>
-                      <span>
-                        <picture>
-                          <img
-                            src={`https://ddragon.leagueoflegends.com/cdn/${
-                              gameDataState?.gameData.version
-                            }/img/champion/${
-                              gameDataState?.gameData.champs?.find(
-                                (c) => c.key === pData?.championId.toString()
-                              )?.id
-                            }.png`}
-                            alt={pData?.player.summonerName as string}
-                          />
-                        </picture>
-                      </span>
+                      <ChampionPic
+                        size={24}
+                        index={pDataIndex}
+                        id={player.info.champ?.id}
+                        image={`${DDRAGON}/${CDN}/${
+                          gameDataState?.gameData.version
+                        }/${IMG}/champion/${
+                          gameDataState?.gameData.champs?.find(
+                            (c) => c.key === pData?.championId.toString()
+                          )?.id
+                        }.png`}
+                      />
                     </Link>
                   </p>
                 ))}
               </div>
               <div className="ptcp_right">
-                {participants.team200.map((pData) => (
+                {participants?.team200.map((pData, pDataIndex) => (
                   <p
                     key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={
@@ -364,20 +285,18 @@ function MatchInfo({
                     }
                   >
                     <Link to={`/stats/@${pData?.player.summonerName}`}>
-                      <span>
-                        <picture>
-                          <img
-                            src={`https://ddragon.leagueoflegends.com/cdn/${
-                              gameDataState?.gameData.version
-                            }/img/champion/${
-                              gameDataState?.gameData.champs?.find(
-                                (c) => c.key === pData?.championId.toString()
-                              )?.id
-                            }.png`}
-                            alt={pData?.player.summonerName as string}
-                          />
-                        </picture>
-                      </span>
+                      <ChampionPic
+                        size={24}
+                        index={pDataIndex}
+                        id={player.info.champ?.id}
+                        image={`${DDRAGON}/${CDN}/${
+                          gameDataState?.gameData.version
+                        }/${IMG}/champion/${
+                          gameDataState?.gameData.champs?.find(
+                            (c) => c.key === pData?.championId.toString()
+                          )?.id
+                        }.png`}
+                      />
                       <span>{pData?.player.summonerName}</span>
                     </Link>
                   </p>
@@ -452,21 +371,6 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
       flex-flow: column wrap;
       justify-items: center;
       align-items: center;
-      > picture {
-        display: block;
-        width: 60px;
-        height: 60px;
-        border-radius: 100%;
-        overflow: hidden;
-        box-sizing: border-box;
-        border: 2px solid ${(props) => (props.isWin ? '#1dc49b' : '#e54787')};
-        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-
-        img {
-          display: block;
-          width: 100%;
-        }
-      }
     }
 
     .lane {
@@ -498,7 +402,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
     }
 
     .stats_square_slot {
-      margin-left: 1.5rem;
+      margin-left: 1.4rem;
       display: flex;
       align-items: center;
       .stats_square_wrap {
@@ -583,32 +487,6 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
             }
           }
         }
-
-        picture {
-          display: inline-block;
-          width: 24px;
-          height: 24px;
-          border-radius: 100%;
-          overflow: hidden;
-          position: relative;
-
-          &:after {
-            position: absolute;
-            left: 0;
-            top: 0;
-            content: '';
-            width: 100%;
-            height: 100%;
-            border-radius: 100%;
-            border: 2px solid #a17f3e;
-            box-sizing: border-box;
-          }
-
-          img {
-            display: block;
-            width: 100%;
-          }
-        }
       }
     }
 
@@ -616,7 +494,7 @@ const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
       display: flex;
       justify-content: center;
       flex-flow: column wrap;
-      margin-left: 1.5rem;
+      margin-left: 1.4rem;
       font-size: 12px;
       .text_line {
         vertical-align: middle;
