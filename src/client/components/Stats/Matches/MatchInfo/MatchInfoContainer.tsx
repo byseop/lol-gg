@@ -3,7 +3,7 @@ import MatchInfo from './MatchInfo';
 import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
 import type { MatchTypes } from 'src/server/api/match/types';
-import type { GameData } from 'src/server/api/data/types';
+import type { ItemsData } from 'src/server/api/data/types';
 import type { MatchInfoTypes } from '../Matches';
 
 const client = new ApolloClient({ uri: '/.netlify/functions/match' });
@@ -11,20 +11,24 @@ const client = new ApolloClient({ uri: '/.netlify/functions/match' });
 export type MatchInfoContainerPropTypes = {
   gameId: string | undefined;
   encryptedSummonerId: string;
-  gameDataState: GameData | null;
   index: number;
   getGameInfoes: ({ data, playerPID }: {
     data: MatchTypes;
     playerPID: number | undefined
   }) => MatchInfoTypes | undefined;
+  gameVersion: string | undefined;
+  getItems: (item: number) => ItemsData | undefined;
+  getChamp: (championId: number | undefined) => string | undefined;
 };
 
 export default function MatchInfoContainer({
   gameId,
   encryptedSummonerId,
-  gameDataState,
   index,
   getGameInfoes,
+  gameVersion,
+  getItems,
+  getChamp
 }: MatchInfoContainerPropTypes) {
   const QUERY_MATCH = gql`
     query($gameId: String!) {
@@ -100,9 +104,11 @@ export default function MatchInfoContainer({
       data={data}
       loading={loading}
       encryptedSummonerId={encryptedSummonerId}
-      gameDataState={gameDataState}
       index={index}
       getGameInfoes={getGameInfoes}
+      gameVersion={gameVersion}
+      getItems={getItems}
+      getChamp={getChamp}
     />
   );
 }

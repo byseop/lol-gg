@@ -8,7 +8,6 @@ import ChampionPic from './ChampionPic';
 import URL from 'src/client/constants/url';
 import SlotContainer from './Slot';
 import { Link } from 'react-router-dom';
-import type { GameData } from 'src/server/api/data/types';
 import type { MatchTypes } from 'src/server/api/match/types';
 import type { ItemsData } from 'src/server/api/data/types';
 import type { MatchInfoTypes } from '../Matches';
@@ -17,7 +16,6 @@ type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
   loading: boolean;
   encryptedSummonerId: string;
-  gameDataState: GameData | null;
   index: number;
   getGameInfoes: ({
     data,
@@ -26,6 +24,9 @@ type MatchInfoPropTypes = {
     data: MatchTypes;
     playerPID: number | undefined;
   }) => MatchInfoTypes | undefined;
+  gameVersion: string | undefined;
+  getItems: (item: number) => ItemsData | undefined;
+  getChamp: (championId: number | undefined) => string | undefined;
 };
 
 const { DDRAGON, CDN, IMG } = URL;
@@ -34,9 +35,11 @@ function MatchInfo({
   data,
   loading,
   encryptedSummonerId,
-  gameDataState,
   index,
-  getGameInfoes
+  getGameInfoes,
+  gameVersion,
+  getItems,
+  getChamp
 }: MatchInfoPropTypes) {
   const [matchInfo, setMatchInfo] = useState<MatchInfoTypes>();
   const playerPID = useMemo(() => {
@@ -75,7 +78,7 @@ function MatchInfo({
             <span className="game_duration">
               {(data.matchData.gameDuration / 60).toFixed(0)}분
             </span>
-            <span>Patch: {data.matchData.gameVersion.slice(0, 5)}</span>
+            <span>Patch: {gameVersion?.slice(0, 5)}</span>
           </div>
           <div className="match_info">
             <div className="champ">
@@ -84,7 +87,7 @@ function MatchInfo({
                 name={player.info.champ?.name}
                 index={index}
                 id={player.info.champ?.id}
-                image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/champion/${player.info.champ?.id}.png`}
+                image={`${DDRAGON}/${CDN}/${gameVersion}/${IMG}/champion/${player.info.champ.id}.png`}
                 useTooltip={true}
                 isWin={player?.stats.win}
               />
@@ -106,14 +109,14 @@ function MatchInfo({
             <div className="stats_square_slot">
               <div className="stats_square_wrap">
                 <div className="spell">
-                  {player.info.spells?.map((spell) => (
+                  {player.info.spells.map((spell) => (
                     <SlotContainer
                       index={index}
                       data={spell}
                       type={'spell'}
                       id={spell.id}
                       key={`${index}-${spell.id}`}
-                      image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/spell/${spell.id}.png`}
+                      image={`${DDRAGON}/${CDN}/${gameVersion}/${IMG}/spell/${spell.id}.png`}
                     />
                   ))}
                 </div>
@@ -227,13 +230,9 @@ function MatchInfo({
                       key={`${index}-${item}`}
                       id={item}
                       index={index}
-                      data={
-                        gameDataState?.gameData.items?.[
-                          item.toString() as keyof ItemsData[]
-                        ]
-                      }
+                      data={getItems(item)}
                       type={'item'}
-                      image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/item/${item}.png`}
+                      image={`${DDRAGON}/${CDN}/${gameVersion}/${IMG}/item/${item}.png`}
                     />
                   ))}
                 </div>
@@ -260,12 +259,8 @@ function MatchInfo({
                         index={pDataIndex}
                         id={player.info.champ?.id}
                         image={`${DDRAGON}/${CDN}/${
-                          gameDataState?.gameData.version
-                        }/${IMG}/champion/${
-                          gameDataState?.gameData.champs?.find(
-                            (c) => c.key === pData?.championId.toString()
-                          )?.id
-                        }.png`}
+                          gameVersion
+                        }/${IMG}/champion/${getChamp(pData?.championId)}.png`}
                       />
                     </Link>
                   </p>
@@ -290,12 +285,8 @@ function MatchInfo({
                         index={pDataIndex}
                         id={player.info.champ?.id}
                         image={`${DDRAGON}/${CDN}/${
-                          gameDataState?.gameData.version
-                        }/${IMG}/champion/${
-                          gameDataState?.gameData.champs?.find(
-                            (c) => c.key === pData?.championId.toString()
-                          )?.id
-                        }.png`}
+                          gameVersion
+                        }/${IMG}/champion/${getChamp(pData?.championId)}.png`}
                       />
                       <span>{pData?.player.summonerName}</span>
                     </Link>
