@@ -22,7 +22,6 @@ function League({
   handleChangeLeague,
   setRecent10GamesStats
 }: LeaguePropTypes) {
-  console.log(data);
   const [selectedLeague, setSelectedLeague] = useState<QueueType | undefined>(
     'RANKED_SOLO_5x5'
   );

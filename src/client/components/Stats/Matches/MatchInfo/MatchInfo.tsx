@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
@@ -6,22 +6,13 @@ import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
 import ChampionPic from './ChampionPic';
 import URL from 'src/client/constants/url';
-import type {
-  MatchTypes,
-  Participant,
-  ParticipantIdentity
-} from 'src/server/api/match/types';
-import type {
-  GameData,
-  SummonerSpell,
-  RunesReforged,
-  Rune,
-  Champion
-} from 'src/server/api/data/types';
+import type { GameData } from 'src/server/api/data/types';
+import type { MatchTypes } from 'src/server/api/match/types';
 import type { Recent10GamesStatsTypes } from '../../StatsContainer';
 import type { ItemsData } from 'src/server/api/data/types';
 import SlotContainer from './Slot';
 import { Link } from 'react-router-dom';
+import type { MatchInfoTypes } from '../Matches';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -32,6 +23,13 @@ type MatchInfoPropTypes = {
   setRecent10GamesStats: React.Dispatch<
     React.SetStateAction<Recent10GamesStatsTypes[]>
   >;
+  getGameInfoes: ({
+    data,
+    playerPID
+  }: {
+    data: MatchTypes;
+    playerPID: number | undefined;
+  }) => MatchInfoTypes | undefined;
 };
 
 const { DDRAGON, CDN, IMG } = URL;
@@ -42,8 +40,10 @@ function MatchInfo({
   encryptedSummonerId,
   gameDataState,
   index,
-  setRecent10GamesStats
+  setRecent10GamesStats,
+  getGameInfoes
 }: MatchInfoPropTypes) {
+  const [matchInfo, setMatchInfo] = useState<MatchInfoTypes>();
   const playerPID = useMemo(() => {
     if (!data) return undefined;
     return data.matchData.participantIdentities.find(
@@ -51,98 +51,19 @@ function MatchInfo({
     )?.participantId;
   }, [data, encryptedSummonerId]);
 
-  const player = useMemo(() => {
-    if (!data || !playerPID || !gameDataState) return undefined;
-    const temp = data.matchData.participants.find(
-      (p) => p.participantId === playerPID
-    );
-    if (!temp) return undefined;
-    const champ = gameDataState.gameData.champs?.find(
-      (c) => c.key === temp.championId.toString()
-    );
-    const spells: SummonerSpell[] = [temp.spell1Id, temp.spell2Id].reduce(
-      (acc, cur) =>
-        acc.concat(
-          gameDataState.gameData.spells?.find((s) => s.key === cur.toString())
-        ),
-      [] as any
-    );
-    const primaryRune = gameDataState.gameData.runes
-      ?.find((reforged) => reforged.id === temp?.stats.perkPrimaryStyle)
-      ?.slots[0].runes.find(
-        (primary) => primary.id === temp?.stats.perk0
-      ) as Rune;
-    const secondaryRune = gameDataState.gameData.runes?.find(
-      (reforged) => reforged.id === temp?.stats.perkSubStyle
-    ) as RunesReforged;
-    const runes: [Rune, RunesReforged] = [primaryRune, secondaryRune];
+  useEffect(() => {
+    if (!data) return;
+    const matchInfo = getGameInfoes({ data, playerPID });
+    matchInfo && setMatchInfo(getGameInfoes({ data, playerPID }));
+  }, [data, getGameInfoes, playerPID]);
 
-    return {
-      info: {
-        spells,
-        champ,
-        runes,
-        timeline: temp.timeline,
-        items: []
-      },
-      stats: temp.stats
-    };
-  }, [data, playerPID, gameDataState]);
+  const player = useMemo(() => {
+    return matchInfo?.player;
+  }, [matchInfo]);
 
   const participants = useMemo(() => {
-    let temp: ((Participant & ParticipantIdentity) | null)[] = [];
-    for (let i = 0; i < 10; i++) {
-      if (data && data.matchData.participantIdentities) {
-        temp.push({
-          ...data.matchData.participantIdentities[i],
-          ...data.matchData.participants[i]
-        });
-      }
-    }
-    return temp.reduce(
-      (acc, cur) => {
-        if (cur?.teamId === 100) {
-          return {
-            ...acc,
-            team100: acc.team100.concat(cur)
-          };
-        }
-        return {
-          ...acc,
-          team200: acc.team200.concat(cur)
-        };
-      },
-      { team100: [], team200: [] } as {
-        team100: ((Participant & ParticipantIdentity) | null)[];
-        team200: ((Participant & ParticipantIdentity) | null)[];
-      }
-    );
-  }, [data]);
-  // console.log(data);
-  // console.log(player);
-  console.log(participants);
-  // console.log(gameDataState?.gameData);
-
-  useEffect(() => {
-    if (player) {
-      setRecent10GamesStats((prev) => {
-        if (prev.length < 10) {
-          return [
-            ...prev,
-            {
-              champ: player.info.champ as Champion,
-              kda: {
-                kills: player.stats.kills,
-                deaths: player.stats.deaths,
-                assists: player.stats.assists
-              }
-            }
-          ];
-        }
-        return prev;
-      });
-    }
-  }, [setRecent10GamesStats, player]);
+    return matchInfo?.participants;
+  }, [matchInfo]);
 
   return (
     <MatchInfoDiv isWin={player?.stats.win} className="match">
@@ -325,7 +246,7 @@ function MatchInfo({
             </div>
             <div className="participants">
               <div className="ptcp_left">
-                {participants.team100.map((pData, pDataIndex) => (
+                {participants?.team100.map((pData, pDataIndex) => (
                   <p
                     key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={
@@ -356,7 +277,7 @@ function MatchInfo({
                 ))}
               </div>
               <div className="ptcp_right">
-                {participants.team200.map((pData, pDataIndex) => (
+                {participants?.team200.map((pData, pDataIndex) => (
                   <p
                     key={`${index}-${pData?.player}-${pData?.participantId}`}
                     style={

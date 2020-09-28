@@ -34,7 +34,7 @@ export default function StatsContainer({ match }: StatsContainerPropTypes) {
   const [recent10GamesStats, setRecent10GamesStats] = useState<
     Recent10GamesStatsTypes[]
   >([]);
-  console.log(recent10GamesStats);
+  // console.log(recent10GamesStats);
 
   const QUERY_SUMMONER = gql`
     query($nickname: String!) {
