@@ -257,7 +257,7 @@ function MatchInfo({
                       <ChampionPic
                         size={24}
                         index={pDataIndex}
-                        id={player.info.champ?.id}
+                        id={pData?.championId.toString()}
                         image={`${DDRAGON}/${CDN}/${
                           gameVersion
                         }/${IMG}/champion/${getChamp(pData?.championId)}.png`}
@@ -283,7 +283,8 @@ function MatchInfo({
                       <ChampionPic
                         size={24}
                         index={pDataIndex}
-                        id={player.info.champ?.id}
+                        // id={player.info.champ?.id}
+                        id={pData?.championId.toString()}
                         image={`${DDRAGON}/${CDN}/${
                           gameVersion
                         }/${IMG}/champion/${getChamp(pData?.championId)}.png`}
