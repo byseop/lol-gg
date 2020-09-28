@@ -75,7 +75,7 @@ function MatchInfo({
               {renderGameType(data.matchData.queueId)}
             </span>
             <span className="game_created_time">
-              {moment(data.matchData.gameCreation).fromNow()}
+              {moment(data.matchData.gameCreation + data.matchData.gameDuration).fromNow()}
             </span>
             <span className="game_duration">
               {(data.matchData.gameDuration / 60).toFixed(0)}분
