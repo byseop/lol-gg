@@ -6,12 +6,12 @@ import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
 import ChampionPic from './ChampionPic';
 import URL from 'src/client/constants/url';
+import SlotContainer from './Slot';
+import { Link } from 'react-router-dom';
 import type { GameData } from 'src/server/api/data/types';
 import type { MatchTypes } from 'src/server/api/match/types';
 import type { Recent10GamesStatsTypes } from '../../StatsContainer';
 import type { ItemsData } from 'src/server/api/data/types';
-import SlotContainer from './Slot';
-import { Link } from 'react-router-dom';
 import type { MatchInfoTypes } from '../Matches';
 
 type MatchInfoPropTypes = {

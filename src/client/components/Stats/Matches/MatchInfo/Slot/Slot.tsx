@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import styled from 'styled-components';
-
+import { v4 as uuidv4 } from 'uuid';
 export type SlotPropTypes = {
   index: number;
   data: any;
@@ -11,15 +11,16 @@ export type SlotPropTypes = {
 };
 
 function Slot({ index, data, type, id, image }: SlotPropTypes) {
+  const uuid = uuidv4();
   return (
     <div>
       {id ? (
         <>
-          <picture data-tip data-for={`${type}-${index}-${id}`}>
+          <picture data-tip data-for={`${type}-${index}-${id}-${uuid}`}>
             <img src={image} alt={String(id)} />
           </picture>
 
-          <SlotTooltip id={`${type}-${index}-${id}`} effect="solid">
+          <SlotTooltip id={`${type}-${index}-${id}-${uuid}`} effect="solid">
             <picture>
               <img src={image} alt={String(id)} />
             </picture>
