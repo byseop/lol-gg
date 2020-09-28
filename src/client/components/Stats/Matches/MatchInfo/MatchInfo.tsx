@@ -5,6 +5,7 @@ import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import capitalize from 'src/client/utils/capitalize';
 import ChampionPic from './ChampionPic';
+import URL from 'src/client/constants/url';
 import type {
   MatchTypes,
   Participant,
@@ -32,6 +33,8 @@ type MatchInfoPropTypes = {
     React.SetStateAction<Recent10GamesStatsTypes[]>
   >;
 };
+
+const { DDRAGON, CDN, IMG } = URL;
 
 function MatchInfo({
   data,
@@ -117,7 +120,7 @@ function MatchInfo({
   }, [data]);
   // console.log(data);
   // console.log(player);
-  // console.log(participants);
+  console.log(participants);
   // console.log(gameDataState?.gameData);
 
   useEffect(() => {
@@ -160,21 +163,12 @@ function MatchInfo({
           </div>
           <div className="match_info">
             <div className="champ">
-              {/* <picture data-tip data-for={`matchChamp-${index}`}>
-                <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/champion/${player.info.champ?.id}.png`}
-                  alt={player.info.champ?.id}
-                />
-              </picture>
-              <ReactTooltip id={`matchChamp-${index}`} effect="solid">
-                <span className="tooltip-text">{player.info.champ?.name}</span>
-              </ReactTooltip> */}
               <ChampionPic
                 size={60}
                 name={player.info.champ?.name}
                 index={index}
                 id={player.info.champ?.id}
-                image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/champion/${player.info.champ?.id}.png`}
+                image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/champion/${player.info.champ?.id}.png`}
                 useTooltip={true}
                 isWin={player?.stats.win}
               />
@@ -203,7 +197,7 @@ function MatchInfo({
                       type={'spell'}
                       id={spell.id}
                       key={`${index}-${spell.id}`}
-                      image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/spell/${spell.id}.png`}
+                      image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/spell/${spell.id}.png`}
                     />
                   ))}
                 </div>
@@ -215,7 +209,7 @@ function MatchInfo({
                       type={'rune'}
                       id={rune.id}
                       key={`${index}-${rune.id}`}
-                      image={`https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`}
+                      image={`${DDRAGON}/${CDN}/${IMG}/${rune.icon}`}
                     />
                   ))}
                 </div>
@@ -323,7 +317,7 @@ function MatchInfo({
                         ]
                       }
                       type={'item'}
-                      image={`https://ddragon.leagueoflegends.com/cdn/${gameDataState?.gameData.version}/img/item/${item}.png`}
+                      image={`${DDRAGON}/${CDN}/${gameDataState?.gameData.version}/${IMG}/item/${item}.png`}
                     />
                   ))}
                 </div>
@@ -349,9 +343,9 @@ function MatchInfo({
                         size={24}
                         index={pDataIndex}
                         id={player.info.champ?.id}
-                        image={`https://ddragon.leagueoflegends.com/cdn/${
+                        image={`${DDRAGON}/${CDN}/${
                           gameDataState?.gameData.version
-                        }/img/champion/${
+                        }/${IMG}/champion/${
                           gameDataState?.gameData.champs?.find(
                             (c) => c.key === pData?.championId.toString()
                           )?.id
@@ -379,9 +373,9 @@ function MatchInfo({
                         size={24}
                         index={pDataIndex}
                         id={player.info.champ?.id}
-                        image={`https://ddragon.leagueoflegends.com/cdn/${
+                        image={`${DDRAGON}/${CDN}/${
                           gameDataState?.gameData.version
-                        }/img/champion/${
+                        }/${IMG}/champion/${
                           gameDataState?.gameData.champs?.find(
                             (c) => c.key === pData?.championId.toString()
                           )?.id

@@ -31,7 +31,7 @@
     "react-scripts": "3.4.1",
     "react-spinners-kit": "^1.9.1",
     "react-tooltip": "^4.2.7",
-    "recoil": "^0.0.10",
+    "recoil": "^0.0.13",
     "styled-components": "^5.1.1",
     "styled-reset": "^4.1.6",
     "ts-loader": "^7.0.5",
