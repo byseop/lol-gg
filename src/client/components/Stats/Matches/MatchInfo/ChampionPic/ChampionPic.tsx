@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import ReactTooltip from 'react-tooltip';
 import styled from 'styled-components';
 
@@ -8,15 +8,17 @@ export type ChampionPicPropTypes = {
   name?: string | undefined;
   id?: string | undefined;
   useTooltip?: boolean;
+  champLevel?: number;
 };
 
-export default function ChampionPic({
+function ChampionPic({
   image,
   index,
   name,
   useTooltip,
   isWin,
-  size
+  size,
+  champLevel
 }: ChampionPicPropTypes & ChampionPicStylesPropTypes) {
   return (
     <ChampionPicture isWin={isWin} size={size}>
@@ -28,9 +30,16 @@ export default function ChampionPic({
           <span className="tooltip-text">{name}</span>
         </ReactTooltip>
       ) : null}
+      {champLevel && (
+        <div className="champ-level">
+          <p>{champLevel}</p>
+        </div>
+      )}
     </ChampionPicture>
   );
 }
+
+export default memo(ChampionPic);
 
 type ChampionPicStylesPropTypes = {
   isWin?: boolean | undefined;
@@ -43,6 +52,7 @@ const ChampionPicture = styled.span.attrs(
     size: props.size
   })
 )`
+  position: relative;
   picture {
     display: block;
     width: ${(props) => `${props.size}px`};
@@ -62,6 +72,24 @@ const ChampionPicture = styled.span.attrs(
     img {
       display: block;
       width: 100%;
+    }
+  }
+
+  .champ-level {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    border: 1px solid #a17f32;
+    
+    p {
+      font-size: 0.5rem;
     }
   }
 `;

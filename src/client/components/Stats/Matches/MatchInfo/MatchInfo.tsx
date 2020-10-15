@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Spinner from 'src/client/components/Layout/Spinner';
 import moment from 'moment';
@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import type { MatchTypes } from 'src/server/api/match/types';
 import type { ItemsData } from 'src/server/api/data/types';
 import type { MatchInfoTypes } from '../Matches';
+import { useHistory } from 'react-router-dom';
 
 type MatchInfoPropTypes = {
   data: MatchTypes | undefined;
@@ -27,6 +28,7 @@ type MatchInfoPropTypes = {
   gameVersion: string | undefined;
   getItems: (item: number) => ItemsData | undefined;
   getChamp: (championId: number | undefined) => string | undefined;
+  gameId: string | undefined;
 };
 
 const { DDRAGON, CDN, IMG } = URL;
@@ -39,8 +41,10 @@ function MatchInfo({
   getGameInfoes,
   gameVersion,
   getItems,
-  getChamp
+  getChamp,
+  gameId
 }: MatchInfoPropTypes) {
+  const history = useHistory();
   const [matchInfo, setMatchInfo] = useState<MatchInfoTypes>();
   const playerPID = useMemo(() => {
     if (!data) return undefined;
@@ -63,8 +67,13 @@ function MatchInfo({
     return matchInfo?.participants;
   }, [matchInfo]);
 
+  const handleClick = useCallback(() => {
+    if (!gameId) return;
+    history.push(`/game/_${gameId}`);
+  }, [gameId, history]);
+
   return (
-    <MatchInfoDiv isWin={player?.stats.win} className="match">
+    <MatchInfoDiv isWin={player?.stats.win} className="match" onClick={handleClick}>
       {loading && <Spinner minHeight={163} />}
       {!loading && data && player && (
         <div className="match_info_wrap">
@@ -324,6 +333,12 @@ type MatchInfoStylePropTypes = {
 const MatchInfoDiv = styled.div.attrs((props: MatchInfoStylePropTypes) => ({
   isWin: props.isWin
 }))`
+  transition: all 0.3s ease-out;
+  cursor: pointer;
+  &:hover {
+    transform: translateY(-2%);
+    box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.2);
+  }
   & + & {
     margin-top: 1rem;
   }
