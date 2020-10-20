@@ -2,17 +2,20 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import Participant from './Participant';
 import type { ResultDataType } from '../types';
+import type { Score } from '../Game';
 
 type ResultPropTypes = {
   resultData: ResultDataType;
   gameVersion: string;
   gameDuration: number;
+  scores: Score[];
 };
 
 export default function Result({
   resultData,
   gameVersion,
-  gameDuration
+  gameDuration,
+  scores
 }: ResultPropTypes) {
   const dealingAmountRatio = useMemo(() => {
     const temp = [
@@ -44,6 +47,7 @@ export default function Result({
       })()
     }));
   }, [resultData]);
+
   return (
     <ResultWrap>
       <section>
@@ -72,6 +76,9 @@ export default function Result({
                     (p) => p.participantId === participant.participantId
                   )?.ratio as number
                 }
+                grade={scores.findIndex(
+                  (p) => p.playerId === participant.participantId
+                )}
               />
             ))}
           </div>
@@ -100,6 +107,9 @@ export default function Result({
                     (p) => p.participantId === participant.participantId
                   )?.ratio as number
                 }
+                grade={scores.findIndex(
+                  (p) => p.playerId === participant.participantId
+                )}
               />
             ))}
           </div>

@@ -50,6 +50,7 @@ export default function GameContainer({ match }: GameContainerPropTypes) {
             deaths
             assists
             totalMinionsKilled
+            neutralMinionsKilled
             wardsPlaced
             wardsKilled
             visionWardsBoughtInGame
@@ -61,6 +62,13 @@ export default function GameContainer({ match }: GameContainerPropTypes) {
             totalHeal
             totalDamageTaken
             champLevel
+            visionScore
+            turretKills
+            totalTimeCrowdControlDealt
+            doubleKills
+            tripleKills
+            quadraKills
+            pentaKills
           }
           championId
         }

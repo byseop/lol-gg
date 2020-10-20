@@ -11,6 +11,11 @@ type GamePropTypes = {
   data: MatchTypes;
 };
 
+export type Score = {
+  playerId: number;
+  score: number;
+};
+
 export default function Game({ data }: GamePropTypes) {
   const gameVersion = useNewestGameVersion();
   const resultData = useMemo<ResultDataType>(() => {
@@ -57,6 +62,53 @@ export default function Game({ data }: GamePropTypes) {
   }, [data]);
   // console.log(resultData);
 
+  const scores = useMemo<Score[]>(() => {
+    return data.matchData.participants
+      .map((player) => {
+        const { stats } = player;
+        const {
+          kills,
+          deaths,
+          assists,
+          visionScore,
+          champLevel,
+          turretKills,
+          totalDamageDealtToChampions,
+          totalDamageTaken,
+          totalMinionsKilled,
+          neutralMinionsKilled,
+          totalHeal,
+          totalTimeCrowdControlDealt,
+          doubleKills,
+          tripleKills,
+          quadraKills,
+          pentaKills
+        } = stats;
+        console.log(totalTimeCrowdControlDealt);
+        return {
+          playerId: player.participantId,
+          score:
+            kills * 3000 -
+            deaths * 4000 +
+            assists * 1000 +
+            champLevel * 400 +
+            visionScore * 100 +
+            turretKills * 1500 +
+            totalDamageDealtToChampions +
+            totalDamageTaken * 0.9 +
+            totalMinionsKilled * 50 +
+            neutralMinionsKilled * 50 +
+            totalHeal * 20 +
+            totalTimeCrowdControlDealt * 50 +
+            doubleKills * 1000 +
+            tripleKills * 2500 +
+            quadraKills * 5000 +
+            pentaKills * 10000
+        };
+      })
+      .sort((playerA, playerB) => playerB.score - playerA.score);
+  }, [data]);
+
   return (
     <>
       <Header />
@@ -66,6 +118,7 @@ export default function Game({ data }: GamePropTypes) {
             resultData={resultData}
             gameVersion={gameVersion as string}
             gameDuration={data.matchData.gameDuration}
+            scores={scores}
           />
           <div className="sides"></div>
         </GameWrapper>

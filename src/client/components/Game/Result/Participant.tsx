@@ -9,6 +9,7 @@ import useItems from 'src/client/hooks/useItems';
 import { Link } from 'react-router-dom';
 import URL from 'src/client/constants/url';
 import type { ParticipantDataType, TeamStats } from '../types';
+import type { Score } from '../Game';
 
 const { DDRAGON, IMG, CDN } = URL;
 
@@ -19,6 +20,7 @@ type ParticipantsPropTypes = {
   gameDuration: number;
   teamStats: TeamStats;
   dealingAmoutRatio: number;
+  grade: number;
 };
 
 export default function Participant({
@@ -27,12 +29,12 @@ export default function Participant({
   gameVersion,
   gameDuration,
   teamStats,
-  dealingAmoutRatio
+  dealingAmoutRatio,
+  grade
 }: ParticipantsPropTypes) {
   const { player, championId, stats, spell1Id, spell2Id, timeline } = data;
   const champion = useChampionInfo(championId);
   const spells = useSpells({ spell1Id, spell2Id });
-  // console.log(data);
   const { summonerName } = player;
   const {
     kills,
@@ -43,6 +45,7 @@ export default function Participant({
     perkSubStyle,
     perkPrimaryStyle,
     totalMinionsKilled,
+    neutralMinionsKilled,
     wardsPlaced,
     wardsKilled,
     visionWardsBoughtInGame,
@@ -72,6 +75,7 @@ export default function Participant({
           id={championId.toString()}
           image={`${DDRAGON}/${CDN}/${gameVersion}/${IMG}/champion/${champion.id}.png`}
           champLevel={champLevel}
+          grade={grade}
         />
       )}
       {spells && (
@@ -125,8 +129,12 @@ export default function Participant({
       </div>
       <div className="etc">
         <p>
-          <span>{totalMinionsKilled}</span> (
-          {(totalMinionsKilled / (gameDuration / 60)).toFixed(1)}) CS
+          <span>{totalMinionsKilled + neutralMinionsKilled}</span> (
+          {(
+            (totalMinionsKilled + neutralMinionsKilled) /
+            (gameDuration / 60)
+          ).toFixed(1)}
+          ) CS
         </p>
         <p>
           {csDiffPerMinDeltas && csDiffPerMinDeltas['0-10'] && (
@@ -210,6 +218,7 @@ const ParticipantWrap = styled.div`
       rgba(75, 83, 114, 0.3),
       rgba(75, 83, 114, 0.1)
     );
+    transform: scale(1.02, 1.02);
   }
 
   .summoner-name {

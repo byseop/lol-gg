@@ -12,9 +12,12 @@ export type MatchInfoContainerPropTypes = {
   gameId: string | undefined;
   encryptedSummonerId: string;
   index: number;
-  getGameInfoes: ({ data, playerPID }: {
+  getGameInfoes: ({
+    data,
+    playerPID
+  }: {
     data: MatchTypes;
-    playerPID: number | undefined
+    playerPID: number | undefined;
   }) => MatchInfoTypes | undefined;
   gameVersion: string | undefined;
   getItems: (item: number) => ItemsData | undefined;
@@ -63,6 +66,7 @@ export default function MatchInfoContainer({
             deaths
             assists
             totalMinionsKilled
+            neutralMinionsKilled
             wardsPlaced
             wardsKilled
             visionWardsBoughtInGame

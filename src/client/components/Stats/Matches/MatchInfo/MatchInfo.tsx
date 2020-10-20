@@ -73,7 +73,11 @@ function MatchInfo({
   }, [gameId, history]);
 
   return (
-    <MatchInfoDiv isWin={player?.stats.win} className="match" onClick={handleClick}>
+    <MatchInfoDiv
+      isWin={player?.stats.win}
+      className="match"
+      onClick={handleClick}
+    >
       {loading && <Spinner minHeight={163} />}
       {!loading && data && player && (
         <div className="match_info_wrap">
@@ -82,7 +86,9 @@ function MatchInfo({
               {renderGameType(data.matchData.queueId)}
             </span>
             <span className="game_created_time">
-              {moment(data.matchData.gameCreation + data.matchData.gameDuration).fromNow()}
+              {moment(
+                data.matchData.gameCreation + data.matchData.gameDuration
+              ).fromNow()}
             </span>
             <span className="game_duration">
               {(data.matchData.gameDuration / 60).toFixed(0)}분
@@ -159,9 +165,12 @@ function MatchInfo({
               </div>
               <div className="text_line">
                 <b>
-                  {player.stats.totalMinionsKilled} (
+                  {player.stats.totalMinionsKilled +
+                    player.stats.neutralMinionsKilled}{' '}
+                  (
                   {(
-                    player.stats.totalMinionsKilled /
+                    (player.stats.totalMinionsKilled +
+                      player.stats.neutralMinionsKilled) /
                     Number((data.matchData.gameDuration / 60).toFixed(0))
                   ).toFixed(1)}
                   )
@@ -267,9 +276,9 @@ function MatchInfo({
                         size={24}
                         index={pDataIndex}
                         id={pData?.championId.toString()}
-                        image={`${DDRAGON}/${CDN}/${
-                          gameVersion
-                        }/${IMG}/champion/${getChamp(pData?.championId)}.png`}
+                        image={`${DDRAGON}/${CDN}/${gameVersion}/${IMG}/champion/${getChamp(
+                          pData?.championId
+                        )}.png`}
                       />
                     </Link>
                   </p>
@@ -294,9 +303,9 @@ function MatchInfo({
                         index={pDataIndex}
                         // id={player.info.champ?.id}
                         id={pData?.championId.toString()}
-                        image={`${DDRAGON}/${CDN}/${
-                          gameVersion
-                        }/${IMG}/champion/${getChamp(pData?.championId)}.png`}
+                        image={`${DDRAGON}/${CDN}/${gameVersion}/${IMG}/champion/${getChamp(
+                          pData?.championId
+                        )}.png`}
                       />
                       <span>{pData?.player.summonerName}</span>
                     </Link>

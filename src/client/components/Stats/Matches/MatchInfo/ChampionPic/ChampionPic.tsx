@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import ReactTooltip from 'react-tooltip';
 import styled from 'styled-components';
 
@@ -9,6 +9,7 @@ export type ChampionPicPropTypes = {
   id?: string | undefined;
   useTooltip?: boolean;
   champLevel?: number;
+  grade?: number;
 };
 
 function ChampionPic({
@@ -18,8 +19,16 @@ function ChampionPic({
   useTooltip,
   isWin,
   size,
-  champLevel
+  champLevel,
+  grade
 }: ChampionPicPropTypes & ChampionPicStylesPropTypes) {
+  const convertGrade = useMemo(() => {
+    if (grade === 0) return 'MVP';
+    if (grade === 1) return '2nd';
+    if (grade === 2) return '3rd';
+    return null;
+  }, [grade]);
+
   return (
     <ChampionPicture isWin={isWin} size={size}>
       <picture data-tip data-for={`matchChamp-${index}`}>
@@ -35,6 +44,7 @@ function ChampionPic({
           <p>{champLevel}</p>
         </div>
       )}
+      {convertGrade && <div className="grade">{convertGrade}</div>}
     </ChampionPicture>
   );
 }
@@ -87,9 +97,25 @@ const ChampionPicture = styled.span.attrs(
     justify-content: center;
     border-radius: 100%;
     border: 1px solid #a17f32;
-    
+
     p {
       font-size: 0.5rem;
     }
+  }
+
+  .grade {
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    display: flex;
+    right: -8px;
+    top: -6px;
+    color: rgb(255, 195, 6);
+    background: #333;
+    border: 1px solid rgb(255, 195, 6);
+    font-size: 6px;
+    padding: 2px;
+    font-weight: bold;
+    opacity: 0.7;
   }
 `;
