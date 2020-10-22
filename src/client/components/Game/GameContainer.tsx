@@ -63,7 +63,7 @@ export default function GameContainer({ match }: GameContainerPropTypes) {
             totalDamageTaken
             champLevel
             visionScore
-            turretKills
+            damageDealtToTurrets
             totalTimeCrowdControlDealt
             doubleKills
             tripleKills
@@ -86,6 +86,9 @@ export default function GameContainer({ match }: GameContainerPropTypes) {
             championId
             pickTurn
           }
+          towerKills
+          baronKills
+          dragonKills
         }
       }
     }

@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Header from '../Layout/Header';
 import Inner from '../Layout/Inner';
 import ResultContainer from './Result';
 import useNewestGameVersion from 'src/client/hooks/useNewestGameVersion';
-import type { MatchTypes, Player, Ban } from 'src/server/api/match/types';
+import Side from './Side';
+import type { MatchTypes, Player, Ban, Team } from 'src/server/api/match/types';
 import type { ResultDataType } from './types';
 
 type GamePropTypes = {
@@ -16,7 +17,10 @@ export type Score = {
   score: number;
 };
 
+export type SidePanelEnum = 'GENERAL' | 'PLAYER';
+
 export default function Game({ data }: GamePropTypes) {
+  const [sidePanel, setSidePanel] = useState<SidePanelEnum>('GENERAL');
   const gameVersion = useNewestGameVersion();
   const resultData = useMemo<ResultDataType>(() => {
     const { participants, participantIdentities } = data.matchData;
@@ -52,7 +56,10 @@ export default function Game({ data }: GamePropTypes) {
             (prev, cur) => prev + cur.stats.assists,
             0
           )
-        }
+        },
+        object: data.matchData.teams.find(
+          (team) => team.teamId === teamId
+        ) as Team
       };
     };
     return {
@@ -72,7 +79,7 @@ export default function Game({ data }: GamePropTypes) {
           assists,
           visionScore,
           champLevel,
-          turretKills,
+          damageDealtToTurrets,
           totalDamageDealtToChampions,
           totalDamageTaken,
           totalMinionsKilled,
@@ -84,7 +91,6 @@ export default function Game({ data }: GamePropTypes) {
           quadraKills,
           pentaKills
         } = stats;
-        console.log(totalTimeCrowdControlDealt);
         return {
           playerId: player.participantId,
           score:
@@ -92,10 +98,10 @@ export default function Game({ data }: GamePropTypes) {
             deaths * 4000 +
             assists * 1000 +
             champLevel * 400 +
-            visionScore * 100 +
-            turretKills * 1500 +
+            visionScore * 250 +
+            damageDealtToTurrets * 2 +
             totalDamageDealtToChampions +
-            totalDamageTaken * 0.9 +
+            totalDamageTaken * 0.5 +
             totalMinionsKilled * 50 +
             neutralMinionsKilled * 50 +
             totalHeal * 20 +
@@ -109,6 +115,10 @@ export default function Game({ data }: GamePropTypes) {
       .sort((playerA, playerB) => playerB.score - playerA.score);
   }, [data]);
 
+  const togglePanel = useCallback((type: SidePanelEnum) => {
+    setSidePanel(type);
+  }, []);
+
   return (
     <>
       <Header />
@@ -119,8 +129,9 @@ export default function Game({ data }: GamePropTypes) {
             gameVersion={gameVersion as string}
             gameDuration={data.matchData.gameDuration}
             scores={scores}
+            togglePanel={togglePanel}
           />
-          <div className="sides"></div>
+          <Side sidePanel={sidePanel} resultData={resultData} />
         </GameWrapper>
       </Inner>
     </>
@@ -129,16 +140,22 @@ export default function Game({ data }: GamePropTypes) {
 
 const GameWrapper = styled.div`
   display: flex;
-  margin: 0 -1rem;
+  margin: 0 -0.5rem;
 
   > div {
-    margin: 0 1rem;
+    margin: 0 0.5rem;
     &:first-child {
       width: 65%;
     }
     &.sides {
       flex: 1;
     }
+  }
+
+  section h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
   }
 
   .common-panel-style {

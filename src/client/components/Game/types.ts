@@ -2,7 +2,8 @@ import type {
   Player,
   Ban,
   Stats,
-  Timeline
+  Timeline,
+  Team
 } from 'src/server/api/match/types';
 
 export type ParticipantDataType = {
@@ -14,7 +15,7 @@ export type ParticipantDataType = {
   spell2Id: number;
   stats: Stats;
   timeline: Timeline;
-}
+};
 
 export type TeamStats = {
   kills: number;
@@ -27,6 +28,7 @@ export type TeamDataType = {
   ban: Ban[];
   win: boolean;
   teamStats: TeamStats;
+  object: Team;
 };
 
 export type ResultDataType = {

@@ -9,7 +9,7 @@ import useItems from 'src/client/hooks/useItems';
 import { Link } from 'react-router-dom';
 import URL from 'src/client/constants/url';
 import type { ParticipantDataType, TeamStats } from '../types';
-import type { Score } from '../Game';
+import type { SidePanelEnum } from '../Game';
 
 const { DDRAGON, IMG, CDN } = URL;
 
@@ -21,6 +21,7 @@ type ParticipantsPropTypes = {
   teamStats: TeamStats;
   dealingAmoutRatio: number;
   grade: number;
+  togglePanel: (type: SidePanelEnum) => void;
 };
 
 export default function Participant({
@@ -30,7 +31,8 @@ export default function Participant({
   gameDuration,
   teamStats,
   dealingAmoutRatio,
-  grade
+  grade,
+  togglePanel
 }: ParticipantsPropTypes) {
   const { player, championId, stats, spell1Id, spell2Id, timeline } = data;
   const champion = useChampionInfo(championId);
@@ -67,7 +69,7 @@ export default function Participant({
   const itemSet = useItems([item0, item1, item2, item3, item4, item5, item6]);
 
   return (
-    <ParticipantWrap>
+    <ParticipantWrap onClick={() => togglePanel('PLAYER')}>
       {champion && (
         <ChampionPic
           size={36}
@@ -76,6 +78,7 @@ export default function Participant({
           image={`${DDRAGON}/${CDN}/${gameVersion}/${IMG}/champion/${champion.id}.png`}
           champLevel={champLevel}
           grade={grade}
+          useTooltip={true}
         />
       )}
       {spells && (

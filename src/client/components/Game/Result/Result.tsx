@@ -2,20 +2,22 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import Participant from './Participant';
 import type { ResultDataType } from '../types';
-import type { Score } from '../Game';
+import type { Score, SidePanelEnum } from '../Game';
 
 type ResultPropTypes = {
   resultData: ResultDataType;
   gameVersion: string;
   gameDuration: number;
   scores: Score[];
+  togglePanel: (type: SidePanelEnum) => void;
 };
 
 export default function Result({
   resultData,
   gameVersion,
   gameDuration,
-  scores
+  scores,
+  togglePanel
 }: ResultPropTypes) {
   const dealingAmountRatio = useMemo(() => {
     const temp = [
@@ -79,6 +81,7 @@ export default function Result({
                 grade={scores.findIndex(
                   (p) => p.playerId === participant.participantId
                 )}
+                togglePanel={togglePanel}
               />
             ))}
           </div>
@@ -110,6 +113,7 @@ export default function Result({
                 grade={scores.findIndex(
                   (p) => p.playerId === participant.participantId
                 )}
+                togglePanel={togglePanel}
               />
             ))}
           </div>
@@ -120,12 +124,6 @@ export default function Result({
 }
 
 const ResultWrap = styled.div`
-  h3 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
-  }
-
   .result-board {
     margin-top: 1rem;
     &[data-win='true'] {
@@ -160,7 +158,7 @@ const ResultWrap = styled.div`
   }
 `;
 
-const Mark = styled.div.attrs((props: { isWin: boolean }) => ({
+export const Mark = styled.div.attrs((props: { isWin: boolean }) => ({
   isWin: props.isWin
 }))`
   position: absolute;
