@@ -25,6 +25,7 @@
     "http-proxy-middleware": "^1.0.4",
     "moment": "^2.27.0",
     "netlify-lambda": "^1.6.3",
+    "nivo": "^0.31.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",
