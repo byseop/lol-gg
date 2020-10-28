@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import GameSummaryPanel from './GameSummaryPanel';
+import KeyIndicatorPanel from './KeyIndicatorPanel';
 import type { SidePanelEnum } from '../Game';
 import type { ResultDataType } from '../types';
 
@@ -16,7 +17,12 @@ export default function Side({ ...props }: SidePropTypes) {
   const renderPanel = useCallback(() => {
     switch (sidePanel) {
       case 'GENERAL':
-        return <GameSummaryPanel resultData={resultData} />;
+        return (
+          <>
+            <GameSummaryPanel resultData={resultData} />
+            <KeyIndicatorPanel resultData={resultData} />
+          </>
+        );
       case 'PLAYER':
         return;
       default:

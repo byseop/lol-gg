@@ -21,6 +21,7 @@ export type TeamStats = {
   kills: number;
   deaths: number;
   assists: number;
+  gold: number;
 };
 
 export type TeamDataType = {

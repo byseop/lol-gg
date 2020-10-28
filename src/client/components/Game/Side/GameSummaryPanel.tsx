@@ -78,6 +78,11 @@ export default function GameSummaryPanel({
             <span>BARON</span>
             <div>{red.object.baronKills}</div>
           </div>
+          <div className="etc table-row">
+            <div>{(blue.teamStats.gold / 1000).toFixed(1)}k</div>
+            <span>GOLD</span>
+            <div>{(red.teamStats.gold / 1000).toFixed(1)}k</div>
+          </div>
         </div>
       </div>
     </GameSummaryPanelWrapper>

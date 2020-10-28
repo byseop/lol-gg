@@ -55,6 +55,10 @@ export default function Game({ data }: GamePropTypes) {
           assists: calcedParticipants.reduce(
             (prev, cur) => prev + cur.stats.assists,
             0
+          ),
+          gold: calcedParticipants.reduce(
+            (prev, cur) => prev + cur.stats.goldEarned,
+            0
           )
         },
         object: data.matchData.teams.find(
@@ -163,5 +167,9 @@ const GameWrapper = styled.div`
     background-color: rgba(49, 41, 85, 0.85);
     border: 1px solid rgb(59, 45, 106);
     border-radius: 4px;
+
+    h4 {
+      font-size: 12px;
+    }
   }
 `;
