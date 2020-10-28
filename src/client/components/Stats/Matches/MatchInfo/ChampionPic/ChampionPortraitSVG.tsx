@@ -8,16 +8,21 @@ export type ChampionPicPropTypes = {
   size: number;
   x: number;
   y: number;
+  team?: 'blue' | 'red';
 };
 
-function ChampionPortraitSVG({ id, size, x, y }: ChampionPicPropTypes) {
+function ChampionPortraitSVG({ id, size, x, y, team }: ChampionPicPropTypes) {
   const { DDRAGON, IMG, CDN } = URL;
   const version = useNewestGameVersion();
   const champion = useChampionInfo(id);
 
   if (id > -1) {
     return (
-      <g transform={`translate(${x - size / 2 - 20}, ${y - size / 2})`}>
+      <g
+        transform={`translate(${x - size / 2 - (team === 'red' ? -20 : 20)}, ${
+          y - size / 2
+        })`}
+      >
         <image
           xlinkHref={`${DDRAGON}/${CDN}/${version}/${IMG}/champion/${champion?.id}.png`}
           width={size}
