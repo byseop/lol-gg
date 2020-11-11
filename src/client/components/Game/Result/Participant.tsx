@@ -21,7 +21,13 @@ type ParticipantsPropTypes = {
   teamStats: TeamStats;
   dealingAmoutRatio: number;
   grade: number;
-  togglePanel: (type: SidePanelEnum) => void;
+  togglePanel: ({
+    type,
+    data
+  }: {
+    type: SidePanelEnum;
+    data: ParticipantDataType;
+  }) => void;
 };
 
 export default function Participant({
@@ -69,7 +75,7 @@ export default function Participant({
   const itemSet = useItems([item0, item1, item2, item3, item4, item5, item6]);
 
   return (
-    <ParticipantWrap onClick={() => togglePanel('PLAYER')}>
+    <ParticipantWrap onClick={() => togglePanel({ type: 'PLAYER', data })}>
       {champion && (
         <ChampionPic
           size={36}

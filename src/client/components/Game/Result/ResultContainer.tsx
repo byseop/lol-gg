@@ -1,6 +1,6 @@
 import React from 'react';
 import Result from './Result';
-import type { ResultDataType } from '../types';
+import type { ParticipantDataType, ResultDataType } from '../types';
 import type { Score, SidePanelEnum } from '../Game';
 
 type ResultContainerPropTypes = {
@@ -8,7 +8,13 @@ type ResultContainerPropTypes = {
   gameVersion: string;
   gameDuration: number;
   scores: Score[];
-  togglePanel: (type: SidePanelEnum) => void;
+  togglePanel: ({
+    type,
+    data
+  }: {
+    type: SidePanelEnum;
+    data: ParticipantDataType;
+  }) => void;
 };
 
 export default function ResultContainer({

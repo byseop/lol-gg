@@ -64,7 +64,7 @@ export default function KeyIndicatorPanel({
   return (
     <KeyIndicatorPanelWrapper>
       <div className="common-panel-style" data-win={null}>
-        <h4>플레이어 영향력</h4>
+        <h4>플레이어 캐리력</h4>
         <div className="graph-wrap">
           <div className="blue">
             <ResponsiveBar

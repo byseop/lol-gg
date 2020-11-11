@@ -6,7 +6,7 @@ import ResultContainer from './Result';
 import useNewestGameVersion from 'src/client/hooks/useNewestGameVersion';
 import Side from './Side';
 import type { MatchTypes, Player, Ban, Team } from 'src/server/api/match/types';
-import type { ResultDataType } from './types';
+import type { ParticipantDataType, ResultDataType } from './types';
 
 type GamePropTypes = {
   data: MatchTypes;
@@ -21,6 +21,10 @@ export type SidePanelEnum = 'GENERAL' | 'PLAYER';
 
 export default function Game({ data }: GamePropTypes) {
   const [sidePanel, setSidePanel] = useState<SidePanelEnum>('GENERAL');
+  const [selectedPlayer, setSelectedPlayer] = useState<
+    ParticipantDataType | undefined
+  >();
+  console.log(selectedPlayer);
   const gameVersion = useNewestGameVersion();
   const resultData = useMemo<ResultDataType>(() => {
     const { participants, participantIdentities } = data.matchData;
@@ -119,9 +123,13 @@ export default function Game({ data }: GamePropTypes) {
       .sort((playerA, playerB) => playerB.score - playerA.score);
   }, [data]);
 
-  const togglePanel = useCallback((type: SidePanelEnum) => {
-    setSidePanel(type);
-  }, []);
+  const togglePanel = useCallback(
+    ({ type, data }: { type: SidePanelEnum; data: ParticipantDataType }) => {
+      setSidePanel(type);
+      setSelectedPlayer(data);
+    },
+    []
+  );
 
   return (
     <>
@@ -135,7 +143,11 @@ export default function Game({ data }: GamePropTypes) {
             scores={scores}
             togglePanel={togglePanel}
           />
-          <Side sidePanel={sidePanel} resultData={resultData} />
+          <Side
+            sidePanel={sidePanel}
+            resultData={resultData}
+            selectedPlayer={selectedPlayer}
+          />
         </GameWrapper>
       </Inner>
     </>

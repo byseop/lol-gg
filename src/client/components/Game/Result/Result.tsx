@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import Participant from './Participant';
-import type { ResultDataType } from '../types';
+import type { ParticipantDataType, ResultDataType } from '../types';
 import type { Score, SidePanelEnum } from '../Game';
 
 type ResultPropTypes = {
@@ -9,7 +9,13 @@ type ResultPropTypes = {
   gameVersion: string;
   gameDuration: number;
   scores: Score[];
-  togglePanel: (type: SidePanelEnum) => void;
+  togglePanel: ({
+    type,
+    data
+  }: {
+    type: SidePanelEnum;
+    data: ParticipantDataType;
+  }) => void;
 };
 
 export default function Result({

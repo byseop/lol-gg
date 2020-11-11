@@ -12,6 +12,7 @@ export type SlotPropTypes = {
 
 function Slot({ index, data, type, id, image }: SlotPropTypes) {
   const uuid = uuidv4();
+  if (!data) return <div />;
   return (
     <div>
       {id ? (

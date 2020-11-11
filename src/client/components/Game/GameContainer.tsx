@@ -55,8 +55,16 @@ export default function GameContainer({ match }: GameContainerPropTypes) {
             wardsKilled
             visionWardsBoughtInGame
             perk0
+            perk1
+            perk2
+            perk3
+            perk4
+            perk5
             perkPrimaryStyle
             perkSubStyle
+            statPerk0
+            statPerk1
+            statPerk2
             goldEarned
             totalDamageDealtToChampions
             totalHeal
@@ -102,7 +110,7 @@ export default function GameContainer({ match }: GameContainerPropTypes) {
     }
   );
 
-  // console.log(data);
+  console.log(data);
   if (!data || loading) {
     return (
       <Spinner minHeight={document.getElementById('root')?.clientHeight} />
