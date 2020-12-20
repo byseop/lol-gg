@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import HomeContainer from '../components/Home';
 import StatsContainer from '../components/Stats';
+import GameContainer from '../components/Game';
 import { useQuery } from '@apollo/react-hooks';
 import ApolloClient, { gql } from 'apollo-boost';
 import { atom, useRecoilState } from 'recoil';
@@ -46,6 +47,7 @@ export default function MainRoutes() {
     <Switch>
       <Route path="/" exact component={HomeContainer} />
       <Route path="/stats/@:nickname" exact component={StatsContainer} />
+      <Route path="/game/_:gameId" exact component={GameContainer} />
       <Redirect to="/" />
     </Switch>
   );

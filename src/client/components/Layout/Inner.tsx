@@ -12,8 +12,9 @@ export default function Inner({ children }: InnerPropTypes) {
 }
 
 const CommonInner = styled.div`
-  max-width: 1200px;
-  width: 100%;
+  width: 1300px;
   margin-left: auto;
   margin-right: auto;
+  padding: 20px;
+  box-sizing: border-box;
 `;

@@ -1,38 +1,22 @@
 import React from 'react';
-import MatchInfo from './MatchInfo';
-import { useQuery } from '@apollo/react-hooks';
+import Game from './Game';
 import ApolloClient, { gql, DocumentNode } from 'apollo-boost';
+import { useQuery } from '@apollo/react-hooks';
+import type { match } from 'react-router-dom';
 import type { MatchTypes } from 'src/server/api/match/types';
-import type { ItemsData } from 'src/server/api/data/types';
-import type { MatchInfoTypes } from '../Matches';
+import Spinner from '../Layout/Spinner';
+
+type GameParams = {
+  gameId: string;
+};
+type GameContainerPropTypes = {
+  match: match<GameParams>;
+};
 
 const client = new ApolloClient({ uri: '/.netlify/functions/match' });
 
-export type MatchInfoContainerPropTypes = {
-  gameId: string | undefined;
-  encryptedSummonerId: string;
-  index: number;
-  getGameInfoes: ({
-    data,
-    playerPID
-  }: {
-    data: MatchTypes;
-    playerPID: number | undefined;
-  }) => MatchInfoTypes | undefined;
-  gameVersion: string | undefined;
-  getItems: (item: number) => ItemsData | undefined;
-  getChamp: (championId: number | undefined) => string | undefined;
-};
-
-export default function MatchInfoContainer({
-  gameId,
-  encryptedSummonerId,
-  index,
-  getGameInfoes,
-  gameVersion,
-  getItems,
-  getChamp
-}: MatchInfoContainerPropTypes) {
+export default function GameContainer({ match }: GameContainerPropTypes) {
+  const { gameId } = match.params;
   const QUERY_MATCH = gql`
     query($gameId: String!) {
       matchData(gameId: $gameId) {
@@ -71,8 +55,28 @@ export default function MatchInfoContainer({
             wardsKilled
             visionWardsBoughtInGame
             perk0
+            perk1
+            perk2
+            perk3
+            perk4
+            perk5
             perkPrimaryStyle
             perkSubStyle
+            statPerk0
+            statPerk1
+            statPerk2
+            goldEarned
+            totalDamageDealtToChampions
+            totalHeal
+            totalDamageTaken
+            champLevel
+            visionScore
+            damageDealtToTurrets
+            totalTimeCrowdControlDealt
+            doubleKills
+            tripleKills
+            quadraKills
+            pentaKills
           }
           championId
         }
@@ -90,6 +94,9 @@ export default function MatchInfoContainer({
             championId
             pickTurn
           }
+          towerKills
+          baronKills
+          dragonKills
         }
       }
     }
@@ -103,17 +110,11 @@ export default function MatchInfoContainer({
     }
   );
 
-  return (
-    <MatchInfo
-      data={data}
-      loading={loading}
-      encryptedSummonerId={encryptedSummonerId}
-      index={index}
-      getGameInfoes={getGameInfoes}
-      gameVersion={gameVersion}
-      getItems={getItems}
-      getChamp={getChamp}
-      gameId={gameId}
-    />
-  );
+  console.log(data);
+  if (!data || loading) {
+    return (
+      <Spinner minHeight={document.getElementById('root')?.clientHeight} />
+    );
+  }
+  return <Game data={data} />;
 }

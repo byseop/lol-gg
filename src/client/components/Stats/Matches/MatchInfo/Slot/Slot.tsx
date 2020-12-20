@@ -12,6 +12,7 @@ export type SlotPropTypes = {
 
 function Slot({ index, data, type, id, image }: SlotPropTypes) {
   const uuid = uuidv4();
+  if (!data) return <div />;
   return (
     <div>
       {id ? (
@@ -48,9 +49,14 @@ const SlotTooltip = styled(ReactTooltip)`
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
   opacity: 1;
   picture {
-    width: 72px;
-    height: 72px;
+    width: 72px !important;
+    height: 72px !important;
     margin-right: 1.5rem;
+
+    > img {
+      display: block;
+      width: 100%;
+    }
   }
 
   > div {
@@ -75,5 +81,19 @@ const SlotTooltip = styled(ReactTooltip)`
       text-decoration: none;
       color: inherit;
     }
+  }
+
+  stats {
+    font-weight: bold;
+    color: lightgoldenrodyellow;
+  }
+  passive {
+    font-weight: bold;
+    color: white;
+  }
+  active,
+  unique {
+    font-weight: bold;
+    color: lightcoral;
   }
 `;
