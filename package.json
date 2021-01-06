@@ -18,7 +18,7 @@
     "@types/uuid": "^8.3.0",
     "apollo-boost": "^0.4.9",
     "apollo-server-lambda": "^2.14.5",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bufferutil": "^4.0.1",
     "dotenv-webpack": "^1.8.0",
     "encoding": "^0.1.12",
