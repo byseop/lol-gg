@@ -7,7 +7,7 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/d6059b01-d30f-4869-a696-c58f1dba6c87/deploy-status)](https://app.netlify.com/sites/lol-gg/deploys)
 
-Website link: https://lol-gg.netlify.app
+Website link: https://15gg.netlify.app
 
 ## Project stack
 
